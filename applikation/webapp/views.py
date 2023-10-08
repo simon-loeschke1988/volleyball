@@ -6,6 +6,7 @@ from django.http import HttpResponse
 # Create your views here.
 
 def index(request):
-    template = loader.get_template('webapp/index.html')
+    # index.html is located in applikation/webapp/templates/index.html, but we don't need to specify the full path // Simon Löschke
+    template = loader.get_template('index.html')
     return HttpResponse(template.render({}, request))
 
