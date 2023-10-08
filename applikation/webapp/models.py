@@ -2,14 +2,14 @@ from django.db import models
 
 class Players(models.Model):
     name = models.CharField(max_length=200)
-    surname = models.CharField(max_length=200, null=True)
+    lastname = models.CharField(max_length=200, null=True)
     gender = models.CharField(max_length=200,null=True)
     country = models.CharField(max_length=200, default="None")
     birthdate = models.DateTimeField('date of birth', null=True)
     age = models.IntegerField(default=0)
     
     def __str__(self) -> str:
-        return f"{self.name} {self.surname}"
+        return f"{self.name}"
     
     class Meta:
         verbose_name_plural = "Players"
