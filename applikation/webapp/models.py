@@ -2,20 +2,37 @@ from django.db import models
 
 class Players(models.Model):
     name = models.CharField(max_length=200)
+    surname = models.CharField(max_length=200, null=True)
+    gender = models.CharField(max_length=200,null=True)
+    country = models.CharField(max_length=200, default="None")
+    birthdate = models.DateTimeField('date of birth', default=0)
     age = models.IntegerField(default=0)
+    
+    def __str__(self) -> str:
+        return f"{self.name} {self.surname}"
     
     class Meta:
         verbose_name_plural = "Players"
+        
 class Cities(models.Model):
     name = models.CharField(max_length=200)
     country = models.CharField(max_length=200)
     
+    def __str__(self) -> str:
+        return f"{self.name} {self.country}"
     class Meta:
         verbose_name_plural = "Cities"
 
 class Teams(models.Model):
     name = models.CharField(max_length=200)
-    members = models.ManyToManyField(Players)
+    #memeber 1 darf nicht gleich member 2 sein
+    member1 = models.ForeignKey(Players, on_delete=models.CASCADE, related_name='team_member1')
+    member2 = models.ForeignKey(Players, on_delete=models.CASCADE, related_name='team_member2')
+    
+    
+    
+    def __str__(self) -> str:
+        return f"{self.name}"
     
     class Meta:
         verbose_name_plural = "Teams"
@@ -33,9 +50,12 @@ class Rounds(models.Model):
 
 class Courts(models.Model):
     name = models.CharField(max_length=200)
-    round = models.ForeignKey(Rounds, on_delete=models.CASCADE, related_name='court_round')
     date = models.DateTimeField('date played')
+    time = models.DateTimeField('time played', default=0)
     roundNumber = models.IntegerField(default=2)
+    
+    def __str__(self) -> str:
+        return f"{self.name}"
     
     class Meta:
         verbose_name_plural = "Courts"
@@ -47,6 +67,9 @@ class Matches(models.Model):
     loser = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='match_loser')
     date = models.DateTimeField('date played')
     round = models.ForeignKey(Rounds, on_delete=models.CASCADE, related_name='match_round')
+    
+    def __str__(self) -> str:
+        return f"{self.team1} vs {self.team2}"
     
     class Meta:
         verbose_name_plural = "Matches"
@@ -61,6 +84,9 @@ class Tournament(models.Model):
     loser = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='tournament_loser')
     city = models.ForeignKey(Cities, on_delete=models.CASCADE, related_name='tournament_city')
     matches = models.ManyToManyField(Matches)
+    
+    def __str__(self) -> str:
+        return f"{self.name}"
     
     class Meta:
         verbose_name_plural = "Tournaments"
