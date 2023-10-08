@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block description %} Spielerübersicht {% endblock %}
+{% block keywords %} Spieler, Player {% endblock %}
+
+{%block title%} Spieler {% endblock %}
+
+{% block content %}
+
+<h1>Spieler</h1>
+<ul>
+    {% for x in players %}
+      <li>{{ x.name }}</li>
+    {% endfor %}
+  </ul>
+{% endblock %}
