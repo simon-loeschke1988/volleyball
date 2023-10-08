@@ -5,7 +5,7 @@ class Players(models.Model):
     surname = models.CharField(max_length=200, null=True)
     gender = models.CharField(max_length=200,null=True)
     country = models.CharField(max_length=200, default="None")
-    birthdate = models.DateTimeField('date of birth', default=0)
+    birthdate = models.DateTimeField('date of birth', null=True)
     age = models.IntegerField(default=0)
     
     def __str__(self) -> str:
@@ -26,8 +26,8 @@ class Cities(models.Model):
 class Teams(models.Model):
     name = models.CharField(max_length=200)
     #memeber 1 darf nicht gleich member 2 sein
-    member1 = models.ForeignKey(Players, on_delete=models.CASCADE, related_name='team_member1')
-    member2 = models.ForeignKey(Players, on_delete=models.CASCADE, related_name='team_member2')
+    member1 = models.ForeignKey(Players, on_delete=models.CASCADE, related_name='team_member1', null=True)
+    member2 = models.ForeignKey(Players, on_delete=models.CASCADE, related_name='team_member2', null=True)
     
     
     
@@ -42,7 +42,7 @@ class Rounds(models.Model):
     teams = models.ManyToManyField(Teams)
     winner = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='round_winner')
     loser = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='round_loser')
-    date = models.DateTimeField('date played')
+    date = models.DateTimeField('date played', null=True)
     roundNumber = models.IntegerField(default=2)
     
     class Meta:
@@ -51,7 +51,7 @@ class Rounds(models.Model):
 class Courts(models.Model):
     name = models.CharField(max_length=200)
     date = models.DateTimeField('date played')
-    time = models.DateTimeField('time played', default=0)
+    time = models.DateTimeField('time played', null=True)
     roundNumber = models.IntegerField(default=2)
     
     def __str__(self) -> str:
@@ -65,7 +65,7 @@ class Matches(models.Model):
     team2 = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='match_team2')
     winner = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='match_winner')
     loser = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='match_loser')
-    date = models.DateTimeField('date played')
+    date = models.DateTimeField('date played', null=True)
     round = models.ForeignKey(Rounds, on_delete=models.CASCADE, related_name='match_round')
     
     def __str__(self) -> str:
@@ -77,7 +77,7 @@ class Matches(models.Model):
 
 class Tournament(models.Model):
     name = models.CharField(max_length=200)
-    date = models.DateTimeField('date played')
+    date = models.DateTimeField('date played', null=True)
     round = models.ForeignKey(Rounds, on_delete=models.CASCADE, related_name='tournament_round')
     court = models.ForeignKey(Courts, on_delete=models.CASCADE, related_name='tournament_court')
     winner = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='tournament_winner')
