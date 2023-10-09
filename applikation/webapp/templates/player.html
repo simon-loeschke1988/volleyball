@@ -7,10 +7,10 @@
 
 {% block content %}
 
-<h1>Spieler</h1>
+<h1 class ="text-3xl">Spieler</h1>
 <ul>
     {% for x in players %}
-      <li>{{ x.name }}</li>
+      <li>{{ x.name }}, {{x.lastname}}, {{x.gender}}</li>
     {% endfor %}
   </ul>
 {% endblock %}
