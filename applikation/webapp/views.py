@@ -4,8 +4,7 @@ from django.template import loader
 from django.http import HttpResponse
 # Author: Simon Löschke
 # models
-from .models import Players, Courts, Matches, Cities, Teams, Tournament
-
+from .models import Player
 # Create your views here.
 
 def index(request):
@@ -14,7 +13,7 @@ def index(request):
     return HttpResponse(template.render({}, request))
 
 def player(request):
-    player = Players.objects.all().values()
+    player = Player.objects.all().values()
     template = loader.get_template('player.html')
     context = {
         'players': player,
@@ -22,11 +21,5 @@ def player(request):
     return HttpResponse(template.render(context, request))
 
 # zu testen 
-def court(request):
-    court = Courts.objects.all().values()
-    template = loader.get_template('court.html')
-    context = {
-        'courts': court,
-    }
-    return HttpResponse(template.render(context, request))
+
 

@@ -57,7 +57,7 @@ class Volleyball:
 
     def insert_into_db(self, player):
         cursor = self.conn.cursor()
-        cursor.execute('INSERT INTO players VALUES (?, ?, ?, ?, ?, ?, ?, ?)', 
+        cursor.execute('INSERT INTO webapp_players VALUES (?, ?, ?, ?, ?, ?, ?, ?)', 
                     (player.get('@FederationCode'), player.get('@FirstName'), player.get('@LastName'), 
                         player.get('@Gender'), player.get('@Nationality'), player.get('@PlaysBeach'), 
                         player.get('@PlaysVolley'), player.get('@TeamName')))
