@@ -10,7 +10,7 @@
 <h1 class ="text-3xl">Spieler</h1>
 <ul>
     {% for x in players %}
-      <li>{{ x.name }}, {{x.lastname}}, {{x.gender}}</li>
+      <li>{{ x.first_name }}, {{x.last_name}}, {{x.gender}} <b> SPIELERNUMMER: {{x.no}}</b></li>
     {% endfor %}
   </ul>
 {% endblock %}
