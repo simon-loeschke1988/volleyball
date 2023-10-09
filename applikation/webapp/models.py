@@ -1,20 +1,35 @@
 from django.db import models
 
-class Players(models.Model):
-    name = models.CharField(max_length=200)
-    lastname = models.CharField(max_length=200, null=True)
-    gender = models.CharField(max_length=200,null=True)
-    country = models.CharField(max_length=200, default="None")
-    birthdate = models.DateTimeField('date of birth', null=True)
-    age = models.IntegerField(default=0)
-    
-    def __str__(self) -> str:
-        return f"{self.name}"
-    
+class Player(models.Model):
+    """ FEDERATION_CHOICES = [
+        ('USA', 'USA'),
+        ('ITA', 'Italy'),
+        # ... Andere FederationCodes hinzufügen
+    ]
+     """
+    GENDER_CHOICES = [
+        (0, 'Male'),
+        (1, 'Female'),
+        (3, 'Other'),
+    ]
+
+    federation_code = models.CharField(max_length=5, choices=FEDERATION_CHOICES)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    gender = models.IntegerField(choices=GENDER_CHOICES)
+    nationality = models.CharField(max_length=5)  # Kann auch zu einem CHOICES-Feld gemacht werden
+    plays_beach = models.BooleanField()
+    plays_volley = models.BooleanField()
+    team_name = models.CharField(max_length=100)
+    no = models.IntegerField(unique=True)
+    version = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name} ({self.no})"
     class Meta:
         verbose_name_plural = "Players"
         
-class Cities(models.Model):
+""" class Cities(models.Model):
     name = models.CharField(max_length=200)
     country = models.CharField(max_length=200)
     
@@ -22,8 +37,8 @@ class Cities(models.Model):
         return f"{self.name} {self.country}"
     class Meta:
         verbose_name_plural = "Cities"
-
-class Teams(models.Model):
+ """
+""" class Teams(models.Model):
     name = models.CharField(max_length=200)
     #memeber 1 darf nicht gleich member 2 sein
     member1 = models.ForeignKey(Players, on_delete=models.CASCADE, related_name='team_member1', null=True)
@@ -35,9 +50,9 @@ class Teams(models.Model):
         return f"{self.name}"
     
     class Meta:
-        verbose_name_plural = "Teams"
+        verbose_name_plural = "Teams" """
 
-class Rounds(models.Model):
+""" class Rounds(models.Model):
     name = models.CharField(max_length=200)
     teams = models.ManyToManyField(Teams)
     winner = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='round_winner')
@@ -46,9 +61,9 @@ class Rounds(models.Model):
     roundNumber = models.IntegerField(default=2)
     
     class Meta:
-        verbose_name_plural = "Rounds"
+        verbose_name_plural = "Rounds" """
 
-class Courts(models.Model):
+""" class Courts(models.Model):
     name = models.CharField(max_length=200)
     date = models.DateTimeField('date played')
     time = models.DateTimeField('time played', null=True)
@@ -58,9 +73,9 @@ class Courts(models.Model):
         return f"{self.name}"
     
     class Meta:
-        verbose_name_plural = "Courts"
+        verbose_name_plural = "Courts" """
     
-class Matches(models.Model):
+""" class Matches(models.Model):
     team1 = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='match_team1')
     team2 = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='match_team2')
     winner = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='match_winner')
@@ -74,8 +89,8 @@ class Matches(models.Model):
     class Meta:
         verbose_name_plural = "Matches"
     
-
-class Tournament(models.Model):
+ """
+""" class Tournament(models.Model):
     name = models.CharField(max_length=200)
     date = models.DateTimeField('date played', null=True)
     round = models.ForeignKey(Rounds, on_delete=models.CASCADE, related_name='tournament_round')
@@ -90,7 +105,7 @@ class Tournament(models.Model):
     
     class Meta:
         verbose_name_plural = "Tournaments"
-    
+     """
 
     
     
