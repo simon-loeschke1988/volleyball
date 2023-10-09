@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!--Author: Simon Löschke-->
 <html lang="de">
 <head>
     <meta charset="UTF-8">
@@ -7,6 +8,7 @@
     <meta name="description" content="{% block description %}{% endblock %}">
     <meta name="keywords" content="{% block keywords %}{% endblock %}">
 
+
 </head>
 <body>
     <header>
@@ -14,7 +16,7 @@
             <ul>
                 <li><a href="{%url 'webapp:index'%}">Home</a></li>
                 <li><a href="{%url 'webapp:player' %}">Spieler</a></li>
-                <li><a href="#">Contact</a></li>
+                <li><a href="{% url 'webapp:court'%}">Contact</a></li>
             </ul>
         </nav>
     </header>

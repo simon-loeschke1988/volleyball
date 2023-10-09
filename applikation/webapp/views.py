@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.template import loader
 
 from django.http import HttpResponse
-
+# Author: Simon Löschke
 # models
 from .models import Players, Courts, Matches, Cities, Teams, Tournament
 
@@ -18,6 +18,15 @@ def player(request):
     template = loader.get_template('player.html')
     context = {
         'players': player,
+    }
+    return HttpResponse(template.render(context, request))
+
+# zu testen 
+def court(request):
+    court = Courts.objects.all().values()
+    template = loader.get_template('court.html')
+    context = {
+        'courts': court,
     }
     return HttpResponse(template.render(context, request))
 
