@@ -11,6 +11,8 @@ class PlayerAdmin(admin.ModelAdmin):
 
 class BeachTeamAdmin(admin.ModelAdmin):
   list_display = ("player1", "player2","no")
+  raw_id_fields = ('player1', 'player2')
+
 
 # Register your models here.
 admin.site.register(Player, PlayerAdmin)
