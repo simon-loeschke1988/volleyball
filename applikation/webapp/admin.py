@@ -4,16 +4,12 @@ from django.contrib import admin
 
 
 
-from .models import Players, Courts, Matches, Cities, Teams, Tournament
+from .models import Player
 
 class PlayerAdmin(admin.ModelAdmin):
-  list_display = ("name", "lastname",)
+  list_display = ("first_name", "last_name",)
 
 # Register your models here.
-admin.site.register(Players, PlayerAdmin)
-admin.site.register(Cities)
-admin.site.register(Matches)
-admin.site.register(Courts)
-admin.site.register(Tournament)
-admin.site.register(Teams)
+admin.site.register(Player, PlayerAdmin)
+
 
