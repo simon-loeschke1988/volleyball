@@ -1,8 +1,7 @@
 import requests
 import xml.etree.ElementTree as ET
 from django.core.management.base import BaseCommand
-from webapp.models import Player  # Ersetzen Sie 'myapp' durch den Namen Ihrer Django-App
-
+from webapp.models import Player 
 class Command(BaseCommand):
     help = 'Import players from the specified XML request'
 
@@ -26,13 +25,7 @@ class Command(BaseCommand):
             root = ET.fromstring(response.content)
             
             for player in root.findall('Player'):
-                no_element = player.get('No')
-                """ if no_element is None:
-                    print("Missing 'No' element for player entry:")
-                    print(ET.tostring(player).decode())  # Dies wird den gesamten 'player'-Eintrag ausgeben, in dem 'No' fehlt.
-                    no_text = None
-                else:
-                    no_text = no_element.text """
+               #no_element = player.get('No')
                 federation_code = player.get('FederationCode')
                 first_name = player.get('FirstName')
                 last_name = player.get('LastName')
