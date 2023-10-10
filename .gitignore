@@ -4,3 +4,4 @@ app.log
 *.sqlite3-journal
 dev/
 migrations/
+settings.py
