@@ -6,7 +6,16 @@ from webapp.models import Player  # Ersetzen Sie 'myapp' durch den Namen Ihrer D
 class Command(BaseCommand):
     help = 'Import players from the specified XML request'
 
+    #############################
+    # Bei Änderungen von Fields müssen die Felder in der Datenbank gelöscht werden, models.py, admin.py anpassen und dann folgende Befehle ausführen:
+    # python manage.py db_wipe
+    # python manage.py migrate
+    # python manage.py import_player
+    #############################
+
+
     def handle(self, *args, **kwargs):
+        Player.objects.all().delete()
         url = "https://www.fivb.org/vis2009/XmlRequest.asmx"
         payload = {
             "Request": "<Request Type='GetPlayerList' Fields='FederationCode FirstName Gender LastName Nationality PlaysBeach PlaysVolley TeamName No'/>"
@@ -17,24 +26,30 @@ class Command(BaseCommand):
             root = ET.fromstring(response.content)
             
             for player in root.findall('Player'):
-                federation_code = player.find('FederationCode').text if player.find('FederationCode') is not None else ''
-                first_name = player.find('FirstName').text if player.find('FirstName') is not None else ''
-                last_name = player.find('LastName').text if player.find('LastName') is not None else ''
-                gender_text = player.find('Gender').text if player.find('Gender') is not None else ''
+                no_element = player.get('No')
+                """ if no_element is None:
+                    print("Missing 'No' element for player entry:")
+                    print(ET.tostring(player).decode())  # Dies wird den gesamten 'player'-Eintrag ausgeben, in dem 'No' fehlt.
+                    no_text = None
+                else:
+                    no_text = no_element.text """
+                federation_code = player.get('FederationCode')
+                first_name = player.get('FirstName')
+                last_name = player.get('LastName')
+                gender_text = player.get('Gender')
                 gender = 0 if gender_text.lower() == 'male' else 1
-                nationality = player.find('Nationality').text if player.find('Nationality') is not None else ''
-                plays_beach = player.find('PlaysBeach').text.lower() == 'true' if player.find('PlaysBeach') is not None else False
-                plays_volley = player.find('PlaysVolley').text.lower() == 'true' if player.find('PlaysVolley') is not None else False
-                team_name = player.find('TeamName').text if player.find('TeamName') is not None else ''
-                no_text = player.find('No').text if player.find('No') is not None else None
-                no = int(no_text) if no_text is not None else None
+                plays_beach = player.get('PlaysBeach').lower == 'true' if player.get('PlaysBeach') is not None else False
+                plays_volley = player.get('PlaysVolley').lower == 'true' if player.get('PlaysVolley') is not None else False
+                team_name = player.get('TeamName')
+                no_text = player.get('No')
+                no = int(no_text) 
+
 
                 player_obj = Player(
                     federation_code=federation_code,
                     first_name=first_name,
                     last_name=last_name,
                     gender=gender,
-                    nationality=nationality,
                     plays_beach=plays_beach,
                     plays_volley=plays_volley,
                     team_name=team_name,

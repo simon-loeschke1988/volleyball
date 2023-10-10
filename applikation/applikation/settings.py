@@ -76,8 +76,12 @@ WSGI_APPLICATION = 'applikation.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'volleyball',
+        'USER': 'django',
+        'PASSWORD': 'djangoadmin',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 

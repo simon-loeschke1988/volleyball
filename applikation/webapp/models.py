@@ -12,12 +12,11 @@ class Player(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     gender = models.IntegerField(choices=GENDER_CHOICES)
-    nationality = models.CharField(max_length=5,null="True")  # Kann auch zu einem CHOICES-Feld gemacht werden
     plays_beach = models.BooleanField()
     plays_volley = models.BooleanField()
     team_name = models.CharField(max_length=100)
-    no = models.IntegerField(unique=True,null=True)
-    version = models.IntegerField(null=True)
+    no = models.IntegerField(unique=True)
+    
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} ({self.no})"
