@@ -28,7 +28,7 @@ class BeachTeam(models.Model):
     player1 = models.ForeignKey(Player, related_name="team_as_player1", on_delete=models.CASCADE)
     player2 = models.ForeignKey(Player, related_name="team_as_player2", on_delete=models.CASCADE)
     name = models.CharField(max_length=255, null=True, blank=True)
-    rank = models.PositiveIntegerField(null=True, blank=True)  # Kann IntegerField sein, wenn negative Ränge möglich sind.
+    rank = models.IntegerField(null=True, blank=True)  # Kann IntegerField sein, wenn negative Ränge möglich sind.
     earned_points_team = models.PositiveIntegerField(null=True, blank=True)
     earnings_team = models.PositiveIntegerField(null=True, blank=True)  # Angenommen, es handelt sich um einen Ganzzahlwert.
     no = models.PositiveIntegerField(unique=True)
