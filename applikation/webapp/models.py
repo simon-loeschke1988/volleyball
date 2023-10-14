@@ -42,4 +42,24 @@ class BeachTeam(models.Model):
         unique_together = ('player1', 'player2', 'name')
         ordering = ['no']
         
+        
+        
+# Runden
+
+from django.db import models
+
+class BeachRound(models.Model):
+    code = models.CharField(max_length=10)
+    name = models.CharField(max_length=255)
+    bracket = models.CharField(max_length=10)
+    phase = models.CharField(max_length=10)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    number = models.IntegerField()
+    version = models.IntegerField()
+
+    def __str__(self):
+        return self.name
+
+        
   
