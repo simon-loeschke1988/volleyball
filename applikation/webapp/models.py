@@ -39,7 +39,7 @@ class BeachTeam(models.Model):
     
     class Meta:
         verbose_name_plural = "BeachTeams"
-        unique_together = ('player1', 'player2', 'version')
+        unique_together = ('player1', 'player2', 'name')
         ordering = ['no']
         
   
