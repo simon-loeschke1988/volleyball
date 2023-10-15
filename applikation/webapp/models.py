@@ -1,7 +1,6 @@
 from django.db import models
 
 class Player(models.Model):
-
     GENDER_CHOICES = [
         (0, 'Male'),
         (1, 'Female'),
@@ -16,37 +15,30 @@ class Player(models.Model):
     plays_volley = models.BooleanField()
     team_name = models.CharField(max_length=100)
     no = models.IntegerField(unique=True)
-    
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} ({self.no})"
+
     class Meta:
         verbose_name_plural = "Players"
-
 
 class BeachTeam(models.Model):
     player1 = models.ForeignKey(Player, related_name="team_as_player1", on_delete=models.CASCADE)
     player2 = models.ForeignKey(Player, related_name="team_as_player2", on_delete=models.CASCADE)
     name = models.CharField(max_length=255, null=True, blank=True)
-    rank = models.IntegerField(null=True, blank=True)  # Kann IntegerField sein, wenn negative Ränge möglich sind.
+    rank = models.IntegerField(null=True, blank=True)
     earned_points_team = models.PositiveIntegerField(null=True, blank=True)
-    earnings_team = models.PositiveIntegerField(null=True, blank=True)  # Angenommen, es handelt sich um einen Ganzzahlwert.
+    earnings_team = models.PositiveIntegerField(null=True, blank=True)
     no = models.PositiveIntegerField(unique=True)
     version = models.PositiveIntegerField(null=True, blank=True)
 
     def __str__(self):
-        return f"{self.player1} / {self.player2} ({self.no})"   
-    
+        return f"{self.player1} / {self.player2} ({self.no})"
+
     class Meta:
         verbose_name_plural = "BeachTeams"
         unique_together = ('player1', 'player2', 'name')
         ordering = ['no']
-        
-        
-        
-# Runden
-
-from django.db import models
 
 class BeachRound(models.Model):
     code = models.CharField(max_length=10)
@@ -55,11 +47,40 @@ class BeachRound(models.Model):
     phase = models.CharField(max_length=10)
     start_date = models.DateField()
     end_date = models.DateField()
-    number = models.IntegerField()
+    number = models.IntegerField(unique=True)  # BeachRound-Nummer eindeutig machen
     version = models.IntegerField()
 
     def __str__(self):
         return self.name
+class BeachMatch(models.Model):
+    no_in_tournament = models.IntegerField()
+    local_date = models.DateField()
+    local_time = models.TimeField()
+    team_a = models.ForeignKey(BeachTeam, on_delete=models.CASCADE, related_name='matches_team_a', null=True)
+    team_b = models.ForeignKey(BeachTeam, on_delete=models.CASCADE, related_name='matches_team_b', null=True)
+    court = models.CharField(max_length=10)
+    match_points_a = models.IntegerField()
+    match_points_b = models.IntegerField()
+    points_team_a_set1 = models.IntegerField()
+    points_team_b_set1 = models.IntegerField()
+    points_team_a_set2 = models.IntegerField()
+    points_team_b_set2 = models.IntegerField()
+    points_team_a_set3 = models.IntegerField(null=True, blank=True)
+    points_team_b_set3 = models.IntegerField(null=True, blank=True)
+    duration_set1 = models.IntegerField()
+    duration_set2 = models.IntegerField()
+    duration_set3 = models.IntegerField(null=True, blank=True)
+    no_round = models.ForeignKey(BeachRound, on_delete=models.CASCADE, related_name='matches')
+    no_tournament = models.IntegerField()
+    no_player_a1 = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='matches_as_player_a1', null=True)
+    no_player_a2 = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='matches_as_player_a2', null=True)
+    no_player_b1 = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='matches_as_player_b1', null=True)
+    no_player_b2 = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='matches_as_player_b2', null=True)
 
-        
-  
+    def __str__(self):
+        return f"Match {self.id}: {self.team_a} vs. {self.team_b} ({self.no_round})"
+
+    class Meta:
+        verbose_name_plural = "Matches"
+        unique_together = ('team_a', 'team_b', 'no_round')
+        ordering = ['id']

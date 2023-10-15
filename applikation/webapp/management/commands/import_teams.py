@@ -4,6 +4,7 @@ import requests
 import logging
 
 from webapp.models import Player, BeachTeam
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)  # Setzen Sie das gewünschte Log-Level
 
@@ -17,6 +18,7 @@ file_handler.setFormatter(formatter)
 
 # Fügen Sie den Handler zum Logger hinzu
 logger.addHandler(file_handler)
+
 class Command(BaseCommand):
     help = "Import BeachTeams from XML API response"
 
@@ -28,7 +30,7 @@ class Command(BaseCommand):
 
         response = requests.get(url, params=payload)
         if response.status_code != 200:
-            logging.info(self.style.ERROR(f"Failed to retrieve data with status code: {response.status_code}"))
+            logger.error(f"Failed to retrieve data with status code: {response.status_code}")
             return
 
         xml_response = ElementTree.fromstring(response.content)
@@ -39,38 +41,38 @@ class Command(BaseCommand):
             no_player2 = team.attrib.get('NoPlayer2')
             
             if not no_player1 or not no_player1.isdigit() or not no_player2 or not no_player2.isdigit():
-                logging.warning(f"Invalid player numbers for team: {team.attrib.get('Name')}")
+                logger.warning(f"Invalid player numbers for team: {team.attrib.get('Name')}")
                 continue
 
             if not no_value or not no_value.isdigit():
-                logging.info(self.style.ERROR(f"Missing or empty 'No' value for team {team.attrib.get('Name')}. Skipping this team."))
+                logger.error(f"Missing or empty 'No' value for team {team.attrib.get('Name')}. Skipping this team.")
                 continue
 
             try:
                 no_as_number = int(no_value)
             except ValueError:
-                logging.info(self.style.ERROR(f"Invalid 'No' value '{no_value}' for team {team.attrib.get('Name')}. Skipping this team."))
+                logger.error(f"Invalid 'No' value '{no_value}' for team {team.attrib.get('Name')}. Skipping this team.")
                 continue
 
             # Überprüfen, ob beide Spieler existieren
-            if not Player.objects.filter(no=no_player1).exists():
-                logging.info(self.style.WARNING(f"Player with number {no_player1} not found. Skipping team {team.attrib.get('Name')}."))
+            player1_instance = Player.objects.filter(no=no_player1).first()
+            player2_instance = Player.objects.filter(no=no_player2).first()
+
+            if not player1_instance:
+                logger.warning(f"Player with number {no_player1} not found. Skipping team {team.attrib.get('Name')}.")
                 continue
 
-            if not Player.objects.filter(no=no_player2).exists():
-                logging.info(self.style.WARNING(f"Player with number {no_player2} not found. Skipping team {team.attrib.get('Name')}."))
+            if not player2_instance:
+                logger.warning(f"Player with number {no_player2} not found. Skipping team {team.attrib.get('Name')}.")
                 continue
 
             # Wenn beide Spieler existieren, dann erstellen oder aktualisieren Sie das BeachTeam
-            player1_instance = Player.objects.get(no=no_player1)
-            player2_instance = Player.objects.get(no=no_player2)
-
             rank = team.attrib.get('Rank') or None
             if rank and rank.strip() != '':
                 try:
                     rank = int(rank)
                 except ValueError:
-                    logging.info(self.style.ERROR(f"Invalid rank value '{rank}' for team {team.attrib.get('Name')}. Skipping this team."))
+                    logger.error(f"Invalid rank value '{rank}' for team {team.attrib.get('Name')}. Skipping this team.")
                     continue
 
             earned_points_team = int(team.attrib.get('EarnedPointsTeam') or 0)
@@ -88,6 +90,4 @@ class Command(BaseCommand):
                 }
             )
 
-
-            logging.info(self.style.SUCCESS(f"Successfully imported/updated team {team.attrib.get('Name')}"))
-
+            logger.info(f"Successfully imported/updated team {team.attrib.get('Name')}")
