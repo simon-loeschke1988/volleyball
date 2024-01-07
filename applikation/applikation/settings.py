@@ -77,9 +77,9 @@ WSGI_APPLICATION = 'applikation.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'volleyball',
-        'USER': 'django',
-        'PASSWORD': 'djangoadmin',
+        'NAME': 'volley',
+        'USER': 'volley',
+        'PASSWORD': 'volley',
         'HOST': 'localhost',
         'PORT': '5432',
     }
