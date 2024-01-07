@@ -36,3 +36,8 @@ Die Seite "Spieler" zeigt jetzt eine komplette Liste aller Spieler. **Achtung**:
 ### Hilfsdateien
 
 - request_tester.py soll alle Requests testen und in eine *.xml-Datei schreiben. Hilft beim Debugging, falls Daten mal wieder nicht gefunden werden.
+
+
+# Dockerfile
+
+docker build -t volley-db .
