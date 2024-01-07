@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 # Handler für die Ausgabe der Log-Nachrichten in eine Datei
-file_handler = logging.FileHandler('rounds_import.log')
+file_handler = logging.FileHandler('logs/rounds_import.log')
 file_handler.setLevel(logging.DEBUG)
 
 # Format für die Log-Nachrichten
