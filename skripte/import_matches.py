@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 # Handler für die Ausgabe der Log-Nachrichten in eine Datei
-file_handler = logging.FileHandler('matches_log.log')
+file_handler = logging.FileHandler('../logs/matches_log.log')
 file_handler.setLevel(logging.DEBUG)
 
 # Format für die Log-Nachrichten
@@ -48,8 +48,8 @@ def import_matches():
         no_in_tournament = match.attrib.get('NoInTournament')
         local_date = match.attrib.get('LocalDate')
         local_time = match.attrib.get('LocalTime')
-        no_team_a = match.attrib.get('NoTeamA')
-        no_team_b = match.attrib.get('NoTeamB')
+        team_a_id = match.attrib.get('NoTeamA')
+        team_b_id = match.attrib.get('NoTeamB')
         court = match.attrib.get('Court')
         match_points_a = match.attrib.get('MatchPointsA')
         match_points_b = match.attrib.get('MatchPointsB')
@@ -57,11 +57,11 @@ def import_matches():
 
         # SQL-Abfrage zum Einfügen der Daten
         insert_query = """
-        INSERT INTO webbapp_beachmatch (no_in_tournament, local_date, local_time, no_team_a, no_team_b, court, match_points_a, match_points_b) 
+        INSERT INTO beach_matches (no_in_tournament, local_date, local_time, team_a_id, team_b_id, court, match_points_a, match_points_b) 
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         """
         try:
-            cur.execute(insert_query, (no_in_tournament, local_date, local_time, no_team_a, no_team_b, court, match_points_a, match_points_b))
+            cur.execute(insert_query, (no_in_tournament, local_date, local_time, team_a_id, team_b_id, court, match_points_a, match_points_b))
         except psycopg2.Error as e:
             logger.error(f"Failed to import match with ID {no_in_tournament}: {str(e)}")
             continue

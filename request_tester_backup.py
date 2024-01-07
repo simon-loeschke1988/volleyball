@@ -4,16 +4,16 @@ from xml.dom import minidom
 
 # URL und Payload definieren
 url = "https://www.fivb.org/vis2009/XmlRequest.asmx"
-#payload = {
+#payload1 = {
  #   "Request": "<Request Type='GetPlayerList' Fields='FederationCode FirstName Gender LastName Nationality PlaysBeach PlaysVolley TeamName No'/>"
 #}
 
-#payload = {
+#payload2 = {
     
 #"Request": "<Request Type='GetBeachTeamList' Fields='NoPlayer1 NoPlayer2 Name Rank EarnedPointsTeam EarningsTeam'> </Request>"
 #}
 
-payload = {"Request": "<Requests><Request Type='GetBeachRoundList'Fields='Code Name Bracket Phase StartDate EndDate No NoTournement></Request>"
+payload3 = {"Request": "<Requests><Request Type='GetBeachRoundList'Fields='Code Name Bracket Phase StartDate EndDate No NoTournement></Request>"
 }
 
 # HTTP-Anfrage senden

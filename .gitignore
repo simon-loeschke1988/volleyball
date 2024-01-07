@@ -6,3 +6,4 @@ logs/
 scriptapp/
 *.log
 flaskenv/
+notes/
