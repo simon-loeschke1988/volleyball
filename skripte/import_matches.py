@@ -57,7 +57,7 @@ def import_matches():
 
         # SQL-Abfrage zum Einfügen der Daten
         insert_query = """
-        INSERT INTO beach_match (no_in_tournament, local_date, local_time, no_team_a, no_team_b, court, match_points_a, match_points_b) 
+        INSERT INTO webbapp_beachmatch (no_in_tournament, local_date, local_time, no_team_a, no_team_b, court, match_points_a, match_points_b) 
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         """
         try:
