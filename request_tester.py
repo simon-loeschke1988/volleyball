@@ -8,11 +8,11 @@ url = "https://www.fivb.org/vis2009/XmlRequest.asmx"
 
 # Payload für den Request erstellen
 payload = {
-            "Request": "<Requests Type='GetBeachRoundList' Fields='Code Name Bracket Phase StartDate EndDate No'><Filter NoTournament='502'/></Requests>"
+            "Request": f"<Requests Type='GetBeachRoundList' Fields='Code Name Bracket Phase StartDate EndDate'></Requests>"
         }
 
 # HTTP-Anfrage senden
-response = requests.post(url, data=payload)
+response = requests.get(url, params=payload)
 print(response.status_code)
 print(response.content)
 

@@ -32,7 +32,7 @@ if response.status_code == 200:
     
     
     # Formatierten XML in eine Datei schreiben
-    with open("round_‚output.xml", "w", encoding="utf-8") as file:
+    with open("round_output.xml", "w", encoding="utf-8") as file:
         file.write(pretty_xml_str)
 else:
     print(f"Failed to retrieve data: {response.status_code}")
