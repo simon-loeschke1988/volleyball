@@ -91,6 +91,7 @@ class BeachTournament(models.Model):
     federation_code = models.CharField(max_length=10, null=True, blank=True)
     number = models.IntegerField(null=True, blank=True)
     version = models.IntegerField(null=True, blank=True)
+    no = models.IntegerField(null=True, blank=True)
 
     # Hier können Sie weitere Felder hinzufügen, die in Ihren XML-Daten vorhanden sind
     # Zum Beispiel:
