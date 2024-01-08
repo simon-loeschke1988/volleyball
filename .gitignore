@@ -5,3 +5,5 @@ logs/
 *.sqlite3-journal
 scriptapp/
 *.log
+d/
+*.db

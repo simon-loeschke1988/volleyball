@@ -84,3 +84,23 @@ class BeachMatch(models.Model):
         verbose_name_plural = "Matches"
         unique_together = ('team_a', 'team_b', 'no_round')
         ordering = ['id']
+class BeachTournament(models.Model):
+    code = models.CharField(max_length=10, null=True, blank=True)
+    name = models.CharField(max_length=100, null=True, blank=True)
+    start_date = models.DateField(null=True, blank=True)
+    federation_code = models.CharField(max_length=10, null=True, blank=True)
+    number = models.IntegerField(null=True, blank=True)
+    version = models.IntegerField(null=True, blank=True)
+
+    # Hier können Sie weitere Felder hinzufügen, die in Ihren XML-Daten vorhanden sind
+    # Zum Beispiel:
+    # end_date = models.DateField(null=True, blank=True)
+    # location = models.CharField(max_length=100, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.name} ({self.code})"
+    
+    class Meta:
+        verbose_name_plural = "BeachTournaments"
+        ordering = ['code']
+        
