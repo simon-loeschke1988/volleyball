@@ -105,3 +105,18 @@ class BeachTournament(models.Model):
         verbose_name_plural = "BeachTournaments"
         ordering = ['code']
         
+class Event(models.Model):
+    code = models.CharField(max_length=100, null=True, blank=True)
+    name = models.CharField(max_length=255, null=True, blank=True)
+    start_date = models.DateField(null=True, blank=True)
+    end_date = models.DateField(null=True, blank=True)
+    no = models.CharField(max_length=50, null=True, blank=True)
+    version = models.IntegerField(null=True, blank=True)
+
+    def __str__(self):
+        return self.name or 'Unbekanntes Event'
+    
+    class Meta:
+        verbose_name_plural = "Events"
+        ordering = ['code']
+        
