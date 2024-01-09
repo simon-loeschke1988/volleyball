@@ -51,6 +51,10 @@ Um das Projekt auszuführen, folge diesen Schritten:
 ## Verwendete Module und Technologien
 - Django: Dieses Projekt basiert auf dem Django-Framework.
 - Celery: Celery wird für die Aufgabenplanung verwendet.
+  - Alle instanzen müssen im Projektordner starten, sonst Fehlermeldung
+- POSTGRESQL (über Docker)
+- Für die Verwendung von Celery ist ein Datenbroker nötig, hierfür habe ich die standardlösung verwendet: RabbitMQ
+  - Hierfür ist keine spezielle Konfiguration nötig: Server starten, und fertig
 
 ## Beitragsrichtlinien
 Wir freuen uns über Beiträge zur Weiterentwicklung dieses Projekts. Bitte beachte unsere [Beitragsrichtlinien](CONTRIBUTING.md) für Details zur Zusammenarbeit und zum Einreichen von Änderungsvorschlägen.
