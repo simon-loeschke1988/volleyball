@@ -1,4 +1,9 @@
 venv/
 *.sqlite3
 app.log
+logs/
 *.sqlite3-journal
+scriptapp/
+*.log
+d/
+*.db

@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from celery.schedules import crontab
+from celery import Celery
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -77,9 +79,9 @@ WSGI_APPLICATION = 'applikation.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'volleyball',
-        'USER': 'django',
-        'PASSWORD': 'djangoadmin',
+        'NAME': 'volley',
+        'USER': 'volley',
+        'PASSWORD': 'volley',
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -126,3 +128,30 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CELERY_BEAT_SCHEDULE = {
+    'import-player-every-hour': {
+        'task': 'meine_app.tasks.import_player_task',
+        'schedule': crontab(minute=0),
+    },
+    'import-events-every-hour': {
+        'task': 'meine_app.tasks.import_events_task',
+        'schedule': crontab(minute=0),
+    },
+    'import-rounds-every-hour': {
+        'task': 'meine_app.tasks.import_rounds_task',
+        'schedule': crontab(minute=0),
+    },
+    'import-matches-every-hour': {
+        'task': 'meine_app.tasks.import_matches_task',
+        'schedule': crontab(minute=0),
+    },
+    'import-tournaments-every-hour': {
+        'task': 'meine_app.tasks.import_tournaments_task',
+        'schedule': crontab(minute=0),
+    },
+    'import-teams-every-hour': {
+        'task': 'meine_app.tasks.import_teams_task',
+        'schedule': crontab(minute=0),
+    },
+}
