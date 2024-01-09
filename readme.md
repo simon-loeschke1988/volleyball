@@ -1,38 +1,64 @@
-# Volleyball-Projekt
 
-Dieses Projekt soll daten aus der XML-API des Volleyballverbands holen, und in einer nutzbaren UI-verwenden.
+# Volleyballdatenbank
+
+## Projektbeschreibung
+In diesem Projekt sollen die Daten der Beachvolleyballturniere weltweit dargestellt werden.
+
+## Installation
+Um dieses Projekt auf deinem lokalen Entwicklungsrechner zu installieren, folge diesen Schritten:
+
+1. Clone das Repository auf deinen Computer.
+   ```sh
+   git clone https://github.com/simon-loeschke1988/volleyball.git
+   ```
+
+2. Wechsle in das Projektverzeichnis.
+   ```sh
+   cd volleyball
+   ```
+
+3. Richte eine virtuelle Umgebung ein (optional, aber empfohlen).
+   ```sh
+   python -m venv venv
+   source venv/bin/activate
+   ```
+
+4. Installiere die Abhängigkeiten.
+   ```sh
+   pip install -r requirements.txt
+   ```
+
+## Verwendung
+Um das Projekt auszuführen, folge diesen Schritten:
+
+1. Aktiviere deine virtuelle Umgebung (falls verwendet).
+   ```sh
+   source venv/bin/activate
+   ```
+
+2. Führe das Projekt aus.
+   ```sh
+   python manage.py runserver
+   ```
+
+3. Öffne deinen Webbrowser und gehe zu [http://localhost:8000/](http://localhost:8000/).
+
+## Funktionen
+
+#TODO
+- ...
+
+## Verwendete Module und Technologien
+- Django: Dieses Projekt basiert auf dem Django-Framework.
+- Celery: Celery wird für die Aufgabenplanung verwendet.
+
+## Beitragsrichtlinien
+Wir freuen uns über Beiträge zur Weiterentwicklung dieses Projekts. Bitte beachte unsere [Beitragsrichtlinien](CONTRIBUTING.md) für Details zur Zusammenarbeit und zum Einreichen von Änderungsvorschlägen.
+
+## Lizenz
+Dieses Projekt ist unter der MIT-Lizenz lizenziert. Weitere Informationen findest du in der [Lizenzdatei](LICENSE).
+
+## Autoren
+- Simon Löschke (https://github.com/simon-loeschke1988)
 
 
-# Changelog
-
-## 10/10/2023
-
-### Aufsetzen der Datenbank
-Datenbank ist POSTGRESQL
-
-- Bisherige Tabelle: Player
-- **ACHTUNG:** Anderes Passwort für Production setzen, educational purpose only
-- Datenmodellierung für Spieler initialisiert
-- Vorteil gegenüber SQLITE: geringere Ladezeiten, mehr Performance, Usermanagement
-
-### Zwei neue Management Commands
-
-- import_player führt den Import der Spieler direkt in die Datenbank durch
-
-```Python
-python manage.py import_player
-````
-
-- db_wipe setzt die Datenbank **KOMPLETT ZURÜCK**
-
-```Python
-python manage.py db_wipe
-````
-
-### Frontend
-
-Die Seite "Spieler" zeigt jetzt eine komplette Liste aller Spieler. **Achtung**: möglicherweise lange Ladezeiten.
-
-### Hilfsdateien
-
-- request_tester.py soll alle Requests testen und in eine *.xml-Datei schreiben. Hilft beim Debugging, falls Daten mal wieder nicht gefunden werden.
