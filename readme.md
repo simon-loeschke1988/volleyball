@@ -64,6 +64,7 @@ Die Spieler können sowohl mit Namen, als auch mit Federation Code gesucht werde
 - Für die Verwendung von Celery ist ein Datenbroker nötig, hierfür habe ich die standardlösung verwendet: RabbitMQ
   - Hierfür ist keine spezielle Konfiguration nötig: Server starten, und fertig
 - Tailwind Konfiguration: https://tailwindcss.com/docs/configuration
+  - `npm run build`
 
 ## Beitragsrichtlinien
 Wir freuen uns über Beiträge zur Weiterentwicklung dieses Projekts. Bitte beachte unsere [Beitragsrichtlinien](CONTRIBUTING.md) für Details zur Zusammenarbeit und zum Einreichen von Änderungsvorschlägen.
