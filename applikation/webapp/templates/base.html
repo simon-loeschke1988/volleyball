@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <!--Author: Simon Löschke-->
 <html lang="de">
@@ -7,16 +8,20 @@
     <title>{% block title %}{% endblock %}</title>
     <meta name="description" content="{% block description %}{% endblock %}">
     <meta name="keywords" content="{% block keywords %}{% endblock %}">
+    <link href="{% static '/css/styles.css' %}" rel="stylesheet">
+
 
 
 </head>
 <body>
     <header>
-        <nav>
-            <ul>
-                <li><a href="{%url 'webapp:index'%}">Home</a></li>
-                <li><a href="{%url 'webapp:player' %}">Spieler</a></li>
-                <li><a href="#">Contact</a></li>
+        <nav class="text-lg align-middle">
+            <ul class="flex flex-row">
+                <li class="m-auto"><a href="{%url 'webapp:index'%}">Home</a></li>
+                <li class="m-auto"><a href="{%url 'webapp:player' %}">Players</a></li>
+                <li class="m-auto"><a href="#">Teams</a></li>
+                <li class="m-auto"><a href="#">Tournaments</a></li>
+                <li class="m-auto"><a href="#">Events</a></li>
             </ul>
         </nav>
     </header>

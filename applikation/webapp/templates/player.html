@@ -7,10 +7,40 @@
 
 {% block content %}
 
-<h1 class ="text-3xl">Spieler</h1>
-<ul>
-    {% for x in players %}
-      <li>{{ x.first_name }}, {{x.last_name}}, {{x.gender}} <b> SPIELERNUMMER: {{x.no}}</b></li>
-    {% endfor %}
-  </ul>
+
+    <header>
+        <form method="get">
+            <input type="text" name="name" placeholder="Name suchen">
+            <select name="fedcode">
+                <option value="">Federation Code auswählen</option>
+                <!-- Hier Optionen für Länder einfügen -->
+                {% for federation_code in fed %}
+                    <option value="{{federation_code }}">{{federation_code }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Suchen</button>
+        </form>
+    </header>
+ 
+
+    <main>
+        {% for Player in page_obj %}
+            <!-- Anzeige der Spieler-Informationen -->
+            <p> {{ Player.first_name }},{{ Player.last_name }}, {{Player.team_name}} </p>
+        {% endfor %}
+
+        <!-- Paginierungs-Links -->
+        <div>
+          {% if page_obj.has_previous %}
+              <a href="?page={{ page_obj.previous_page_number }}&name={{ query_name }}&fedcode={{ query_fedcode }}">Vorherige</a>
+          {% endif %}
+          Seite {{ page_obj.number }} von {{ page_obj.paginator.num_pages }}.
+          {% if page_obj.has_next %}
+              <a href="?page={{ page_obj.next_page_number }}&name={{ query_name }}&fedcode={{ query_fedcode }}">Nächste</a>
+          {% endif %}
+      </div>
+      
+    </main>
+
+
 {% endblock %}
