@@ -45,6 +45,14 @@ Um das Projekt auszuführen, folge diesen Schritten:
 
 ## Funktionen
 
+### Background Worker
+
+- Die Datenbank wird mit Background Worker über einen Celery Beat stündlich aktualisiert
+
+### Spieler
+
+Die Spieler können sowohl mit Namen, als auch mit Federation Code gesucht werden.
+
 #TODO
 - ...
 
