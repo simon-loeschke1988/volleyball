@@ -31,7 +31,7 @@ def player(request):
    # else:
     
    
-    paginator = Paginator(spieler_liste, 10)  # 10 Spieler pro Seite
+    paginator = Paginator(spieler_liste, 100)  # 10 Spieler pro Seite
 
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)

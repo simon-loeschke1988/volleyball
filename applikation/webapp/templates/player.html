@@ -23,12 +23,31 @@
     </header>
  
 
-    <main>
-        {% for Player in page_obj %}
-            <!-- Anzeige der Spieler-Informationen -->
-            <p> {{ Player.first_name }},{{ Player.last_name }}, {{Player.team_name}} </p>
-        {% endfor %}
-
+    
+      <main class="container mx-auto p-4">
+        <table class="min-w-full table-auto">
+            <thead class="bg-gray-800 text-white">
+                <tr>
+                    <th class="px-4 py-2">Vorname</th>
+                    <th class="px-4 py-2">Nachname</th>
+                    <th class="px-4 py-2">Team</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for Player in page_obj %}
+                <tr class="bg-white border-b">
+                    <td class="px-4 py-2">{{ Player.first_name }}</td>
+                    <td class="px-4 py-2">{{ Player.last_name }}</td>
+                    <td class="px-4 py-2">{{ Player.team_name }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="text-center py-4">Keine Spieler gefunden.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    
         <!-- Paginierungs-Links -->
         <div>
           {% if page_obj.has_previous %}
@@ -39,8 +58,11 @@
               <a href="?page={{ page_obj.next_page_number }}&name={{ query_name }}&fedcode={{ query_fedcode }}">Nächste</a>
           {% endif %}
       </div>
-      
     </main>
+    
+      
+      
+    
 
 
 {% endblock %}
