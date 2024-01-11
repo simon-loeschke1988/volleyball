@@ -24,54 +24,68 @@ class Command(BaseCommand):
     help = "Import BeachRounds from XML API response"
 
     def handle(self, *args, **kwargs):
+        logger.debug("Starting import process")
+
+        # URL und Payload für die API-Anfrage
         url = "https://www.fivb.org/vis2009/XmlRequest.asmx"
         payload = {
-            "Request": "<Requests Type='GetBeachRoundList' Fields='Code Name Bracket Phase StartDate EndDate No'></Requests>"
-        }
-        payload2 = {
-            "Request": "<Requests Type='GetBeachRoundList' Fields='Code Name Bracket Phase StartDate EndDate No'></Requests>"
+            "Request": "<Requests> <Request Type='GetBeachRoundList' Fields='Code Name Bracket Phase StartDate EndDate No'></Request></Requests>"
         }
 
+        # Ausführen der API-Anfrage
+    
         response = requests.get(url, params=payload)
         logger.debug(f"URL: {url}")
         logger.debug(f"Payload: {payload}")
-        logger.debug(f"Response Status Code: {response.status_code}")
-        logger.debug(f"Response Content: {response.content}")
+        
 
         if response.status_code != 200:
             logger.error(f"Failed to retrieve data with status code: {response.status_code}")
             return
-
+        logger.debug("vor der verarbeitung")
+        # Verarbeiten der XML-Antwort
         xml_response = ElementTree.fromstring(response.content)
+        logger.debug(f"XML Response: {ElementTree.tostring(xml_response, encoding='utf8').decode('utf8')}")
 
-        for round in xml_response.findall('BeachRound'):
-            no = round.attrib.get('No')
-            code = round.attrib.get('Code')
-            name = round.attrib.get('Name')
-            bracket = round.attrib.get('Bracket')
-            phase = round.attrib.get('Phase')
-            start_date = round.attrib.get('StartDate')
-            end_date = round.attrib.get('EndDate')
-
-            # Überprüfen Sie, ob eines der Felder leer ist
-            if any(
-                not field or field.strip() == ''
-                for field in [no, code, name, bracket, phase, start_date, end_date]
-            ):
-                logger.error(f"Skipping round with missing or empty field. No: {no}")
-                continue
-
-            try:
-                BeachRound.objects.create(
+# Überprüfen, ob das Element BeachRound vorhanden ist
+        if xml_response.findall('.//BeachRound'):
+            logger.debug("BeachRound Elemente gefunden")
+            for round in xml_response.findall('.//BeachRound'):
+            # Ihr vorhandener Code zur Verarbeitung jedes BeachRound-Elements
+                logger.debug("In der for schleife")
+                no = round.attrib.get('No')
+                code = round.attrib.get('Code')
+                name = round.attrib.get('Name')
+                bracket = round.attrib.get('Bracket')
+                phase = round.attrib.get('Phase')
+                start_date = round.attrib.get('StartDate')
+                end_date = round.attrib.get('EndDate')
+                logger.debug("vor erstellung des objekts")   # Versuch, Daten in die Datenbank zu importieren
+                BeachRound.objects.get_or_create(
                     number=no,
-                    code=code,
-                    name=name,
-                    bracket=bracket,
-                    phase=phase,
-                    start_date=start_date,
-                    end_date=end_date
+                    defaults={
+                        'code': code,
+                        'name': name,
+                        'bracket': bracket,
+                        'phase': phase,
+                        'start_date': start_date,  # Keine Konvertierung
+                        'end_date': end_date,      # Keine Konvertierung
+                        
+                    }
                 )
-
+                logger.debug("nach erstellung des objekts")
                 logger.info(f"Successfully imported round with No: {no}")
-            except Exception as e:
-                logger.error(f"Failed to import round with No: {no} - {str(e)}")
+        else:
+            logger.error("Keine BeachRound Elemente gefunden")
+            
+        
+            
+
+            
+        
+        
+                
+
+        if Exception:
+                logger.error(f"Failed to import round with No: {no} - {str(Exception)}")
+            
