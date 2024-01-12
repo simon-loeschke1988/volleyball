@@ -599,6 +599,10 @@ video {
   display: flex;
 }
 
+.table {
+  display: table;
+}
+
 .flex-row {
   flex-direction: row;
 }
@@ -616,14 +620,9 @@ video {
   line-height: 2rem;
 }
 
-.text-3xl {
-  font-size: 1.875rem;
-  line-height: 2.25rem;
-}
-
-.text-sm {
-  font-size: 0.875rem;
-  line-height: 1.25rem;
+.text-lg {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
 }
 
 .text-xl {
