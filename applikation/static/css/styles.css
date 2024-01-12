@@ -603,6 +603,8 @@ video {
   display: table;
 }
 
+
+
 .min-w-full {
   min-width: 100%;
 }
@@ -610,6 +612,7 @@ video {
 .table-auto {
   table-layout: auto;
 }
+
 
 .flex-row {
   flex-direction: row;

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Beach Teams</h1>
+
+  <form method="GET" action="{% url 'beach_teams_list' %}">
+    <input type="text" name="q" value="{{ query }}" placeholder="Suche nach Namen oder Federation Code">
+    <button type="submit">Suchen</button>
+  </form>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Team Name</th>
+        <th>Rank</th>
+        <th>Earned Points</th>
+        <th>Earnings</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for team in teams %}
+        <tr>
+          <td>{{ team.name }}</td>
+          <td>{{ team.rank }}</td>
+          <td>{{ team.earned_points_team }}</td>
+          <td>{{ team.earnings_team }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="pagination">
+    <span class="step-links">
+      {% if teams.has_previous %}
+        <a href="?page=1">&laquo; erste</a>
+        <a href="?page={{ teams.previous_page_number }}">vorherige</a>
+      {% endif %}
+
+      <span class="current-page">{{ teams.number }}</span>
+
+      {% if teams.has_next %}
+        <a href="?page={{ teams.next_page_number }}">nächste</a>
+        <a href="?page={{ teams.paginator.num_pages }}">letzte &raquo;</a>
+      {% endif %}
+    </span>
+  </div>
+{% endblock %}
