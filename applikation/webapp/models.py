@@ -45,45 +45,46 @@ class BeachRound(models.Model):
     name = models.CharField(max_length=255)
     bracket = models.CharField(max_length=10)
     phase = models.CharField(max_length=10)
-    start_date = models.DateField()
-    end_date = models.DateField()
-    number = models.IntegerField(unique=True)  # BeachRound-Nummer eindeutig machen
-    version = models.IntegerField()
+    start_date = models.CharField()
+    end_date = models.CharField()
+    number = models.IntegerField(null=True,blank=True)  # BeachRound-Nummer eindeutig machen
+    version = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return self.name
 class BeachMatch(models.Model):
-    no_in_tournament = models.IntegerField()
-    local_date = models.DateField()
-    local_time = models.TimeField()
-    team_a = models.ForeignKey(BeachTeam, on_delete=models.CASCADE, related_name='matches_team_a', null=True)
-    team_b = models.ForeignKey(BeachTeam, on_delete=models.CASCADE, related_name='matches_team_b', null=True)
-    court = models.CharField(max_length=10)
-    match_points_a = models.IntegerField()
-    match_points_b = models.IntegerField()
-    points_team_a_set1 = models.IntegerField()
-    points_team_b_set1 = models.IntegerField()
-    points_team_a_set2 = models.IntegerField()
-    points_team_b_set2 = models.IntegerField()
-    points_team_a_set3 = models.IntegerField(null=True, blank=True)
-    points_team_b_set3 = models.IntegerField(null=True, blank=True)
-    duration_set1 = models.IntegerField()
-    duration_set2 = models.IntegerField()
-    duration_set3 = models.IntegerField(null=True, blank=True)
-    no_round = models.ForeignKey(BeachRound, on_delete=models.CASCADE, related_name='matches')
-    no_tournament = models.IntegerField()
-    no_player_a1 = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='matches_as_player_a1', null=True)
-    no_player_a2 = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='matches_as_player_a2', null=True)
-    no_player_b1 = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='matches_as_player_b1', null=True)
-    no_player_b2 = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='matches_as_player_b2', null=True)
+    no_in_tournament = models.IntegerField(null=True, blank=True)
+    local_date = models.CharField(null=True, blank=True)
+    local_time = models.CharField(null=True, blank=True)
+    team_a = models.CharField(max_length=100, null=True, blank=True)  # Änderung: CharField statt ForeignKey
+    team_b = models.CharField(max_length=100, null=True, blank=True)  # Änderung: CharField statt ForeignKey
+    court = models.CharField(max_length=10, null=True, blank=True)
+    match_points_a = models.CharField(null=True, blank=True)
+    match_points_b = models.CharField(null=True, blank=True)
+    points_team_a_set1 = models.CharField(null=True, blank=True)
+    points_team_b_set1 = models.CharField(null=True, blank=True)
+    points_team_a_set2 = models.CharField(null=True, blank=True)
+    points_team_b_set2 = models.CharField(null=True, blank=True)
+    points_team_a_set3 = models.CharField(null=True, blank=True)
+    points_team_b_set3 = models.CharField(null=True, blank=True)
+    duration_set1 = models.CharField(null=True, blank=True)
+    duration_set2 = models.CharField(null=True, blank=True)
+    duration_set3 = models.CharField(null=True, blank=True)
+    no_round = models.CharField(max_length=100, null=True, blank=True)  # Änderung: CharField statt ForeignKey
+    no_tournament = models.CharField(null=True, blank=True)
+    no_player_a1 = models.CharField(max_length=100, null=True, blank=True)  # Änderung: CharField statt ForeignKey
+    no_player_a2 = models.CharField(max_length=100, null=True, blank=True)  # Änderung: CharField statt ForeignKey
+    no_player_b1 = models.CharField(max_length=100, null=True, blank=True)  # Änderung: CharField statt ForeignKey
+    no_player_b2 = models.CharField(max_length=100, null=True, blank=True)  # Änderung: CharField statt ForeignKey
 
     def __str__(self):
         return f"Match {self.id}: {self.team_a} vs. {self.team_b} ({self.no_round})"
 
     class Meta:
         verbose_name_plural = "Matches"
-        unique_together = ('team_a', 'team_b', 'no_round')
+        # Entfernung von unique_together, da keine Foreign Keys mehr verwendet werden
         ordering = ['id']
+        
 class BeachTournament(models.Model):
     code = models.CharField(max_length=10, null=True, blank=True)
     name = models.CharField(max_length=100, null=True, blank=True)
