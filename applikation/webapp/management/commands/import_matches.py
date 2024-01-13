@@ -10,12 +10,12 @@ from webapp.models import BeachMatch
 #logger.setLevel(logging.DEBUG)
 
 # Handler für die Ausgabe der Log-Nachrichten in eine Datei
-file_handler = logging.FileHandler('logs/matches_log.log')
-file_handler.setLevel(logging.DEBUG)
+#file_handler = logging.FileHandler('logs/matches_log.log')
+#file_handler.setLevel(logging.DEBUG)
 
 # Format für die Log-Nachrichten
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-file_handler.setFormatter(formatter)
+#formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+#file_handler.setFormatter(formatter)
 
 # Fügen Sie den Handler zum #logger hinzu
 #logger.addHandler(file_handler)

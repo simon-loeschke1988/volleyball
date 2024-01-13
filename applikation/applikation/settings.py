@@ -141,7 +141,7 @@ CELERY_BEAT_SCHEDULE = {
     },
     'import-events-every-hour': {
         'task': 'webapp.tasks.import_events_task',
-        'schedule': crontab(minute=10),
+        'schedule': crontab(minute='*/1'),
     },
     'import-rounds-every-hour': {
         'task': 'webapp.tasks.import_rounds_task',

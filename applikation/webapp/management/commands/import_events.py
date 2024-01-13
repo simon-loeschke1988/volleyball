@@ -9,11 +9,11 @@ from webapp.models import Event
 ##logger = logging.get#logger(__name__)
 #logger.setLevel(logging.DEBUG)
 
-file_handler = logging.FileHandler('logs/event_import.log')
-file_handler.setLevel(logging.DEBUG)
+#file_handler = logging.FileHandler('logs/event_import.log')
+#file_handler.setLevel(logging.DEBUG)
 
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-file_handler.setFormatter(formatter)
+#formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+#file_handler.setFormatter(formatter)
 
 #logger.addHandler(file_handler)
 
@@ -38,8 +38,8 @@ class Command(BaseCommand):
                 event_data = {
                     'code': event_xml.attrib.get('Code', None),
                     'name': event_xml.attrib.get('Name', None),
-                    'start_date': self.parse_date(event_xml.attrib.get('StartDate', None)),
-                    'end_date': self.parse_date(event_xml.attrib.get('EndDate', None)),
+                    'start_date': event_xml.attrib.get('StartDate', None),
+                    'end_date': event_xml.attrib.get('EndDate', None),
                     'no': event_xml.attrib.get('No', None),
                     'version': int(event_xml.attrib.get('Version')) if event_xml.attrib.get('Version') else None
                 }

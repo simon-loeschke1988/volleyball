@@ -19,20 +19,29 @@ services:
     depends_on:
       - db
 
+  
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
   celery_worker:
     build: .
-    command: celery -A webapp worker --loglevel=info
+    command: celery -A applikation worker --loglevel=info
     volumes:
       - .:/code
     depends_on:
       - db
       - web
+      - rabbitmq
 
   celery_beat:
     build: .
-    command: celery -A webapp beat --loglevel=info
+    command: celery -A applikation beat --loglevel=info
     volumes:
       - .:/code
     depends_on:
       - db
       - web
+      - rabbitmq
