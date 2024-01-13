@@ -1,14 +1,12 @@
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render
 from django.template import loader
-from .models import Player
+from .models import Player, BeachTeam
 from django.db.models import Q
-
-
 from django.http import HttpResponse
 # Author: Simon Löschke
 # models
-from .models import Player
+
 # Create your views here.
 
 def index(request):
@@ -31,7 +29,7 @@ def player(request):
    # else:
     
    
-    paginator = Paginator(spieler_liste, 10)  # 10 Spieler pro Seite
+    paginator = Paginator(spieler_liste, 100)  # 10 Spieler pro Seite
 
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -43,3 +41,30 @@ def player(request):
         }
 
     return render(request, 'player.html', context)
+
+
+def beach_teams_list(request):
+    teams = BeachTeam.objects.all()
+
+    # Suche implementieren
+    query = request.GET.get('q')
+    if query:
+        teams = teams.filter(
+            Q(name__icontains=query) | Q(player1__federation_code__icontains=query) | Q(player2__federation_code__icontains=query)
+        )
+
+    # Paginierung
+    paginator = Paginator(teams, 10)  # 10 Teams pro Seite
+    page = request.GET.get('page')
+
+    try:
+        teams = paginator.page(page)
+    except PageNotAnInteger:
+        teams = paginator.page(1)
+    except EmptyPage:
+        teams = paginator.page(paginator.num_pages)
+
+    return render(request, 'teams.html', {'teams': teams, 'query': query})
+
+
+

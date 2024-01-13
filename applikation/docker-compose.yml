@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: volley
+      POSTGRES_PASSWORD: volley
+      POSTGRES_DB: volley
+    ports:
+      - "5432:5432"
+  web:
+    build: .
+    command: sh -c "python manage.py wait_for_db && python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  celery_worker:
+    build: .
+    command: celery -A applikation worker --loglevel=info
+    volumes:
+      - .:/code
+    depends_on:
+      - db
+      - web
+      - rabbitmq
+
+  celery_beat:
+    build: .
+    command: celery -A applikation beat --loglevel=info
+    volumes:
+      - .:/code
+    depends_on:
+      - db
+      - web
+      - rabbitmq

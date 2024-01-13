@@ -87,7 +87,7 @@ DATABASES = {
         'NAME': 'volley',
         'USER': 'volley',
         'PASSWORD': 'volley',
-        'HOST': 'localhost',
+        'HOST': 'db',
         'PORT': '5432',
     }
 }
@@ -136,27 +136,27 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CELERY_BEAT_SCHEDULE = {
     'import-player-every-hour': {
-        'task': 'meine_app.tasks.import_player_task',
-        'schedule': crontab(minute=0),
+        'task': 'webapp.tasks.import_player_task',
+        'schedule': crontab(minute=10),
     },
     'import-events-every-hour': {
-        'task': 'meine_app.tasks.import_events_task',
-        'schedule': crontab(minute=0),
+        'task': 'webapp.tasks.import_events_task',
+        'schedule': crontab(minute='*/1'),
     },
     'import-rounds-every-hour': {
-        'task': 'meine_app.tasks.import_rounds_task',
-        'schedule': crontab(minute=0),
+        'task': 'webapp.tasks.import_rounds_task',
+        'schedule': crontab(minute=10),
     },
     'import-matches-every-hour': {
-        'task': 'meine_app.tasks.import_matches_task',
-        'schedule': crontab(minute=0),
+        'task': 'webapp.tasks.import_matches_task',
+        'schedule': crontab(minute=10),
     },
     'import-tournaments-every-hour': {
-        'task': 'meine_app.tasks.import_tournaments_task',
-        'schedule': crontab(minute=0),
+        'task': 'webapp.tasks.import_tournaments_task',
+        'schedule': crontab(minute=10),
     },
     'import-teams-every-hour': {
-        'task': 'meine_app.tasks.import_teams_task',
-        'schedule': crontab(minute=0),
+        'task': 'webapp.tasks.import_teams_task',
+        'schedule': crontab(minute=10),
     },
 }

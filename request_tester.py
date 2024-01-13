@@ -5,11 +5,8 @@ from xml.dom import minidom
 
 # URL und Payload definieren
 url = "https://www.fivb.org/vis2009/XmlRequest.asmx"
-
-# Payload für den Request erstellen
 payload = {
-            "Request": f"<Requests Type='GetBeachRoundList' Fields='Code Name Bracket Phase StartDate EndDate'></Requests>"
-        }
+            "Request": f"<Requests> <Request Type= 'GetBeachRoundList' Fields='Code Name Bracket Phase StartDate EndDate'></Request> </Requests>"}
 
 # HTTP-Anfrage senden
 response = requests.get(url, params=payload)
