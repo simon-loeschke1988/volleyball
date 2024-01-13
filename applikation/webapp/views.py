@@ -43,7 +43,7 @@ def player(request):
     return render(request, 'player.html', context)
 
 
-def beach_teams_list(request):
+def teams(request):
     teams = BeachTeam.objects.all()
 
     # Suche implementieren

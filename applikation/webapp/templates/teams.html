@@ -3,7 +3,7 @@
 {% block content %}
   <h1>Beach Teams</h1>
 
-  <form method="GET" action="{% url 'beach_teams_list' %}">
+  <form method="GET" action="{% url 'webapp:teams' %}">
     <input type="text" name="q" value="{{ query }}" placeholder="Suche nach Namen oder Federation Code">
     <button type="submit">Suchen</button>
   </form>
