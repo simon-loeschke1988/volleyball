@@ -1,33 +1,44 @@
-# Python-Image als Basis
+# Stage 1: Install Node.js and build frontend assets
+FROM node:latest as build-stage
+
+# Setzen des Arbeitsverzeichnisses im Container für das Frontend-Build
+WORKDIR /app
+
+# Kopieren der package.json und package-lock.json für Node.js
+COPY package*.json ./
+
+# Installieren der Node-Abhängigkeiten
+RUN npm install
+
+# Kopieren der restlichen Frontend-Dateien und Bauen des Frontends
+COPY . .
+RUN npm run build
+
+# Stage 2: Set up the Python environment
 FROM python:3.12.1
+
+# Setzen des Arbeitsverzeichnisses im Container
+WORKDIR /code
+
+# Kopieren der gebauten Frontend-Assets aus der Build-Stage
+COPY --from=build-stage /app/static /code/static
 
 # Umgebungsvariablen setzen
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-# Arbeitsverzeichnis im Container
-WORKDIR /code
-
-# Python-Abhängigkeiten installieren
-COPY requirements.txt /code/
 # Virtuelle Umgebung erstellen und aktivieren
-RUN python -m venv /code/venv
-ENV PATH="/code/venv/bin:$PATH"
+#RUN python -m venv /code/venv
+#ENV PATH="/code/venv/bin:$PATH"
 
-# Python-Abhängigkeiten installieren
-RUN pip install --upgrade pip
-RUN pip install --no-cache-dir -r requirements.txt
+# Installieren von Python-Abhängigkeiten
+RUN pip install --upgrade pip wheel setuptools
+COPY requirements.txt /code/
+RUN  pip install --no-cache-dir -r /code/requirements.txt
 
-# Node.js installieren
-RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
-RUN apt-get install -y nodejs
-
-# Node.js-Abhängigkeiten installieren
-COPY package.json package-lock.json /code/
-RUN npm install
-
-# Projektcode kopieren
+# Kopieren des Django-Projektcodes
 COPY . /code/
 
-# Django-Startkommando
+
+# Startkommando für Django
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

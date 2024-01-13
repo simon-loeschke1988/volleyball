@@ -9,16 +9,13 @@ services:
       POSTGRES_DB: volley
     ports:
       - "5432:5432"
-
   web:
     build: .
-    command: sh -c "npm run build-tailwind && python manage.py runserver 0.0.0.0:8000"
+    command: sh -c "python manage.py wait_for_db && python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     volumes:
       - .:/code
     ports:
       - "8000:8000"
-    environment:
-      DEBUG: 'true'
     depends_on:
       - db
 

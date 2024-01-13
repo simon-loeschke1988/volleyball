@@ -1,12 +1,12 @@
 from django.core.management.base import BaseCommand
 from xml.etree import ElementTree
 import requests
-import logging
+#import logging
 
 from webapp.models import Player, BeachTeam
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)  # Setzen Sie das gewünschte Log-Level
+#logger = logging.get#logger(__name__)
+#logger.setLevel(logging.DEBUG)  # Setzen Sie das gewünschte Log-Level
 
 # Handler für die Ausgabe der Log-Nachrichten in eine Datei
 file_handler = logging.FileHandler('logs/team_import.log')
@@ -16,8 +16,8 @@ file_handler.setLevel(logging.DEBUG)  # Setzen Sie das gewünschte Log-Level fü
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 file_handler.setFormatter(formatter)
 
-# Fügen Sie den Handler zum Logger hinzu
-logger.addHandler(file_handler)
+# Fügen Sie den Handler zum #logger hinzu
+#logger.addHandler(file_handler)
 
 class Command(BaseCommand):
     help = "Import BeachTeams from XML API response"
@@ -30,7 +30,7 @@ class Command(BaseCommand):
 
         response = requests.get(url, params=payload)
         if response.status_code != 200:
-            logger.error(f"Failed to retrieve data with status code: {response.status_code}")
+            #logger.error(f"Failed to retrieve data with status code: {response.status_code}")
             return
 
         xml_response = ElementTree.fromstring(response.content)
@@ -41,17 +41,17 @@ class Command(BaseCommand):
             no_player2 = team.attrib.get('NoPlayer2')
             
             if not no_player1 or not no_player1.isdigit() or not no_player2 or not no_player2.isdigit():
-                logger.warning(f"Invalid player numbers for team: {team.attrib.get('Name')}")
+                #logger.warning(f"Invalid player numbers for team: {team.attrib.get('Name')}")
                 continue
 
             if not no_value or not no_value.isdigit():
-                logger.error(f"Missing or empty 'No' value for team {team.attrib.get('Name')}. Skipping this team.")
+                #logger.error(f"Missing or empty 'No' value for team {team.attrib.get('Name')}. Skipping this team.")
                 continue
 
             try:
                 no_as_number = int(no_value)
             except ValueError:
-                logger.error(f"Invalid 'No' value '{no_value}' for team {team.attrib.get('Name')}. Skipping this team.")
+                #logger.error(f"Invalid 'No' value '{no_value}' for team {team.attrib.get('Name')}. Skipping this team.")
                 continue
 
             # Überprüfen, ob beide Spieler existieren
@@ -59,11 +59,11 @@ class Command(BaseCommand):
             player2_instance = Player.objects.filter(no=no_player2).first()
 
             if not player1_instance:
-                logger.warning(f"Player with number {no_player1} not found. Skipping team {team.attrib.get('Name')}.")
+                #logger.warning(f"Player with number {no_player1} not found. Skipping team {team.attrib.get('Name')}.")
                 continue
 
             if not player2_instance:
-                logger.warning(f"Player with number {no_player2} not found. Skipping team {team.attrib.get('Name')}.")
+                #logger.warning(f"Player with number {no_player2} not found. Skipping team {team.attrib.get('Name')}.")
                 continue
 
             # Wenn beide Spieler existieren, dann erstellen oder aktualisieren Sie das BeachTeam
@@ -72,7 +72,7 @@ class Command(BaseCommand):
                 try:
                     rank = int(rank)
                 except ValueError:
-                    logger.error(f"Invalid rank value '{rank}' for team {team.attrib.get('Name')}. Skipping this team.")
+                    #logger.error(f"Invalid rank value '{rank}' for team {team.attrib.get('Name')}. Skipping this team.")
                     continue
 
             earned_points_team = int(team.attrib.get('EarnedPointsTeam') or 0)
@@ -90,4 +90,4 @@ class Command(BaseCommand):
                 }
             )
 
-            logger.info(f"Successfully imported/updated team {team.attrib.get('Name')}")
+            #logger.info(f"Successfully imported/updated team {team.attrib.get('Name')}")

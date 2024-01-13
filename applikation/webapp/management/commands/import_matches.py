@@ -1,13 +1,13 @@
 from django.core.management.base import BaseCommand
 from xml.etree import ElementTree
 import requests
-import logging
+#import logging
 
 from webapp.models import BeachMatch
 
 # Konfigurieren Sie das Logging-Modul
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+#logger = logging.get#logger(__name__)
+#logger.setLevel(logging.DEBUG)
 
 # Handler für die Ausgabe der Log-Nachrichten in eine Datei
 file_handler = logging.FileHandler('logs/matches_log.log')
@@ -17,8 +17,8 @@ file_handler.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 file_handler.setFormatter(formatter)
 
-# Fügen Sie den Handler zum Logger hinzu
-logger.addHandler(file_handler)
+# Fügen Sie den Handler zum #logger hinzu
+#logger.addHandler(file_handler)
 
 class Command(BaseCommand):
     help = "Import BeachMatches from XML API response"
@@ -31,7 +31,7 @@ class Command(BaseCommand):
 
         response = requests.get(url, params=payload)
         if response.status_code != 200:
-            logger.error(f"Failed to retrieve data with status code: {response.status_code}")
+            #logger.error(f"Failed to retrieve data with status code: {response.status_code}")
             return
 
         xml_response = ElementTree.fromstring(response.content)
@@ -63,8 +63,9 @@ class Command(BaseCommand):
                     no_player_b1=match.attrib.get('NoPlayerB1'),
                     no_player_b2=match.attrib.get('NoPlayerB2')
                 )
-                logger.info(f"Successfully imported match with ID {match.attrib.get('NoInTournament')}")
+                #logger.info(f"Successfully imported match with ID {match.attrib.get('NoInTournament')}")
             except Exception as e:
-                logger.error(f"Failed to import match with ID {match.attrib.get('NoInTournament')}: {str(e)}")
-                logger.error(f"Match details: {match.attrib}")
+                pass
+                #logger.error(f"Failed to import match with ID {match.attrib.get('NoInTournament')}: {str(e)}")
+                #logger.error(f"Match details: {match.attrib}")
 
