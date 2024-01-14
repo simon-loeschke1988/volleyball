@@ -18,7 +18,7 @@
             <select name="tournament" id="tournament">
                 <option value="">--Please choose a tournament--</option>
                 {% for tournament in tournaments %}
-                <option value="{{ tournament.code }}" {% if selected_tournament == tournament.code %}selected{% endif %}>{{ tournament.name }}</option>
+                <option value="{{ tournament.name }}" {% if selected_tournament == tournament.name %}selected{% endif %}>{{ tournament.name }}</option>
                 {% endfor %}
             </select>
 
@@ -49,7 +49,7 @@
         <ul>
             {% for match in matches %}
             <li>
-                <strong>{{ match.team_a }}</strong> vs. <strong>{{ match.team_b }}</strong>
+                <strong>{{ match.team_a_name }}</strong> vs. <strong>{{ match.team_b_name }}</strong>
                 <div>
                     <span>Court: {{ match.court }}</span> |
                     <span>Date: {{ match.local_date }}</span> |

@@ -45,8 +45,9 @@ class Command(BaseCommand):
                 }
 
                 Event.objects.update_or_create(
-                    code=event_data['code'],
-                    defaults=event_data
+                    no = event_data['no'],
+                    
+                    defaults=event_data,
                 )
 
                 #logger.info(f"Successfully imported/updated event {event_data['name']}")

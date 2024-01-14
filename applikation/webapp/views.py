@@ -29,7 +29,7 @@ def index(request):
         matches = matches.filter(no_tournament=selected_tournament)
 
     if selected_team:
-        matches = matches.filter(team_a=selected_team) | matches.filter(team_b=selected_team)
+        matches = matches.filter(team_a__name=selected_team) | matches.filter(team_b__name=selected_team)
 
     if selected_court:
         matches = matches.filter(court=selected_court)
