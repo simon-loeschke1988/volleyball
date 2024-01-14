@@ -1,7 +1,7 @@
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render
 from django.template import loader
-from .models import Player, BeachTeam
+from .models import Player, BeachTeam, BeachMatch, BeachTournament
 from django.db.models import Q
 from django.http import HttpResponse
 # Author: Simon Löschke
@@ -11,8 +11,38 @@ from django.http import HttpResponse
 
 def index(request):
     # index.html is located in applikation/webapp/templates/index.html, but we don't need to specify the full path // Simon Löschke
-    template = loader.get_template('index.html')
-    return HttpResponse(template.render({}, request))
+   from django.shortcuts import render
+from .models import BeachTournament, BeachTeam, BeachMatch
+
+def index(request):
+    # Filter-Parameter aus dem Request holen
+    selected_tournament = request.GET.get('tournament')
+    selected_team = request.GET.get('team')
+    selected_court = request.GET.get('court')
+
+    # Grunddaten holen
+    tournaments = BeachTournament.objects.all()
+    teams = BeachTeam.objects.all()
+    matches = BeachMatch.objects.all()
+    
+    if selected_tournament:
+        matches = matches.filter(no_tournament=selected_tournament)
+
+    if selected_team:
+        matches = matches.filter(team_a=selected_team) | matches.filter(team_b=selected_team)
+
+    if selected_court:
+        matches = matches.filter(court=selected_court)
+
+    context = {
+        'tournaments': tournaments,
+        'teams': teams,
+        'matches': matches,
+        'selected_tournament': selected_tournament,
+        'selected_team': selected_team,
+        'selected_court': selected_court,
+    }
+    return render(request, 'index.html', context)
 
 def player(request):
     query_name = request.GET.get('name','')
