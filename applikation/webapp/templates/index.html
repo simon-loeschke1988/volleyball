@@ -8,61 +8,13 @@
 {% block content %}
 
 
-    <h1>Tournament Overview</h1>
+    <h1>Tournament List</h1>
 
-    <div>
-        <h2>Filter</h2>
-        <form method="get" action=".">
-            <!-- Dropdown for Tournaments -->
-            <label for="tournament">Tournament:</label>
-            <select name="tournament" id="tournament">
-                <option value="">--Please choose a tournament--</option>
-                {% for tournament in tournaments %}
-                <option value="{{ tournament.name }}" {% if selected_tournament == tournament.name %}selected{% endif %}>{{ tournament.name }}</option>
-                {% endfor %}
-            </select>
-
-            <!-- Dropdown for Teams -->
-            <label for="team">Team:</label>
-            <select name="team" id="team">
-                <option value="">--Please choose a team--</option>
-                {% for team in teams %}
-                <option value="{{ team.name }}" {% if selected_team == team.name %}selected{% endif %}>{{ team.name }}</option>
-                {% endfor %}
-            </select>
-
-            <!-- Dropdown for Courts -->
-            <label for="court">Court:</label>
-            <select name="court" id="court">
-                <option value="">--Please choose a court--</option>
-                {% for match in matches %}
-                <option value="{{ match.court }}" {% if selected_court == match.court %}selected{% endif %}>{{ match.court }}</option>
-                {% endfor %}
-            </select>
-
-            <button type="submit">Filter</button>
-        </form>
-    </div>
-
-    <div>
-        <h2>Matches</h2>
-        <ul>
-            {% for match in matches %}
-            <li>
-                <strong>{{ match.team_a_name }}</strong> vs. <strong>{{ match.team_b_name }}</strong>
-                <div>
-                    <span>Court: {{ match.court }}</span> |
-                    <span>Date: {{ match.local_date }}</span> |
-                    <span>Time: {{ match.local_time }}</span>
-                </div>
-                <div>
-                    Points: {{ match.match_points_a }} vs. {{ match.match_points_b }}
-                </div>
-            </li>
-            {% endfor %}
-        </ul>
-    </div>
-
-
-
+    <ul>
+        {% for tournament in tournaments %}
+            <li>{{ tournament.name }} (Start Date: {{ tournament.start_date }})</li>
+        {% endfor %}
+    </ul>
 {% endblock %}
+
+

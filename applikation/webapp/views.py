@@ -9,35 +9,12 @@ from django.http import HttpResponse
 
 # Create your views here.
 
-
-
 def index(request):
-    # Filter-Parameter aus dem Request holen
-    selected_tournament = request.GET.get('tournament')
-    selected_team = request.GET.get('team')
-    selected_court = request.GET.get('court')
-
-    # Grunddaten holen
-    tournaments = BeachTournament.objects.all()
-    teams = BeachTeam.objects.all()
-    matches = BeachMatch.objects.all()
-    
-    if selected_tournament:
-        matches = matches.filter(no_tournament=selected_tournament)
-
-    if selected_team:
-        matches = matches.filter(team_a__name=selected_team) | matches.filter(team_b__name=selected_team)
-
-    if selected_court:
-        matches = matches.filter(court=selected_court)
+    # Turniere nach dem neuesten Startdatum sortieren
+    tournaments = BeachTournament.objects.all().order_by('start_date')
 
     context = {
         'tournaments': tournaments,
-        'teams': teams,
-        'matches': matches,
-        'selected_tournament': selected_tournament,
-        'selected_team': selected_team,
-        'selected_court': selected_court,
     }
     return render(request, 'index.html', context)
 
