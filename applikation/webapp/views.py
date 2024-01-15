@@ -9,10 +9,7 @@ from django.http import HttpResponse
 
 # Create your views here.
 
-def index(request):
-    # index.html is located in applikation/webapp/templates/index.html, but we don't need to specify the full path // Simon Löschke
-   from django.shortcuts import render
-from .models import BeachTournament, BeachTeam, BeachMatch
+
 
 def index(request):
     # Filter-Parameter aus dem Request holen
