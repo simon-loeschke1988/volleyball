@@ -4,14 +4,21 @@ from django.template import loader
 from .models import Player, BeachTeam, BeachMatch, BeachTournament
 from django.db.models import Q
 from django.http import HttpResponse
+from django.utils.timezone import make_aware
+from datetime import datetime, timedelta
 # Author: Simon Löschke
 # models
 
 # Create your views here.
 
 def index(request):
-    # Turniere nach dem neuesten Startdatum sortieren
-    tournaments = BeachTournament.objects.all().order_by('start_date')
+    # Aktuelles Datum und Datum für 5 Jahre zurück und 7 Monate voraus berechnen
+    today = make_aware(datetime.today())
+    one_year_ago = today - timedelta(days=1 * 365)
+    seven_months_later = today + timedelta(days=7 * 30)  # Ca. 7 Monate
+
+    # Turniere filtern, die zwischen 5 Jahren zurück und 7 Monaten voraus starten
+    tournaments = BeachTournament.objects.filter(start_date__range=(one_year_ago, seven_months_later)).order_by('-start_date')
 
     context = {
         'tournaments': tournaments,
