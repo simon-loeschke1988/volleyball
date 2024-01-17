@@ -1,0 +1,9 @@
+<h1>Matches for Tournament: {{ tournament.name }}</h1>
+
+<ul>
+    {% for match in matches %}
+        <li>{{ match.team_a_name }} vs. {{ match.team_b_name }} - Date: {{ match.local_date }}</li>
+    {% empty %}
+        <li>No matches found for this tournament.</li>
+    {% endfor %}
+</ul>

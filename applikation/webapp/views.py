@@ -1,5 +1,5 @@
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.template import loader
 from .models import Player, BeachTeam, BeachMatch, BeachTournament
 from django.db.models import Q
@@ -24,6 +24,16 @@ def index(request):
         'tournaments': tournaments,
     }
     return render(request, 'index.html', context)
+
+def tournament_matches(request, tournament_id):
+    tournament = get_object_or_404(BeachTournament, id=tournament_id)
+    matches = BeachMatch.objects.filter(no_tournament=tournament.no)  # Annahme: `no_tournament` korrespondiert mit `BeachTournament.no`
+
+    context = {
+        'tournament': tournament,
+        'matches': matches,
+    }
+    return render(request, 'tournament_matches.html', context)
 
 def player(request):
     query_name = request.GET.get('name','')
