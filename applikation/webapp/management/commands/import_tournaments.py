@@ -26,7 +26,7 @@ class Command(BaseCommand):
 
         # Payload für den Request erstellen
         payload_gettournamentlist = {
-            "Request": "<Request Type='GetBeachTournamentList' Fields='Code Name StartDate EndDate FederationCode No'> </Request>"
+            "Request": "<Request Type='GetBeachTournamentList' Fields='Code Name StartDateMainDraw EndDate FederationCode No'> </Request>"
         }
 
         # HTTP-Anfrage senden
