@@ -26,7 +26,7 @@ class Command(BaseCommand):
 
         # Payload für den Request erstellen
         payload_gettournamentlist = {
-            "Request": "<Request Type='GetBeachTournamentList' Fields='Code Name StartDate EndDate FederationCode No'> </Request>"
+            "Request": "<Request Type='GetBeachTournamentList' Fields='Code Name StartDateMainDraw EndDate FederationCode No'> </Request>"
         }
 
         # HTTP-Anfrage senden
@@ -40,7 +40,7 @@ class Command(BaseCommand):
         for tournament in xml_response.findall('BeachTournament'):
             code = tournament.attrib.get('Code')
             name = tournament.attrib.get('Name')
-            #start_date_str = tournament.attrib.get('StartDate')
+            start_date_str = tournament.attrib.get('StartDateMainDraw')
             #end_date_str = tournament.attrib.get('EndDate')
             federation_code = tournament.attrib.get('FederationCode')
             no = tournament.attrib.get('No')
@@ -59,7 +59,7 @@ class Command(BaseCommand):
                 code=code,
                 defaults={
                     'name': name,
-                 #   'start_date': start_date,
+                    'start_date': start_date_str,
                  #   'end_date': end_date,
                     'federation_code': federation_code,
                     'no': no

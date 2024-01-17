@@ -1,7 +1,7 @@
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render
 from django.template import loader
-from .models import Player, BeachTeam
+from .models import Player, BeachTeam, BeachMatch, BeachTournament
 from django.db.models import Q
 from django.http import HttpResponse
 # Author: Simon Löschke
@@ -10,9 +10,13 @@ from django.http import HttpResponse
 # Create your views here.
 
 def index(request):
-    # index.html is located in applikation/webapp/templates/index.html, but we don't need to specify the full path // Simon Löschke
-    template = loader.get_template('index.html')
-    return HttpResponse(template.render({}, request))
+    # Turniere nach dem neuesten Startdatum sortieren
+    tournaments = BeachTournament.objects.all().order_by('start_date')
+
+    context = {
+        'tournaments': tournaments,
+    }
+    return render(request, 'index.html', context)
 
 def player(request):
     query_name = request.GET.get('name','')
