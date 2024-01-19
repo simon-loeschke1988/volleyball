@@ -1,7 +1,7 @@
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render, get_object_or_404
 from django.template import loader
-from .models import Player, BeachTeam, BeachMatch, BeachTournament
+from .models import Player, BeachTeam, BeachMatch, BeachTournament, Event
 from django.db.models import Q
 from django.http import HttpResponse
 from django.utils.timezone import make_aware
@@ -18,10 +18,10 @@ def index(request):
     seven_months_later = today + timedelta(days=7 * 30)  # Ca. 7 Monate
 
     # Turniere filtern, die zwischen 5 Jahren zurück und 7 Monaten voraus starten
-    tournaments = BeachTournament.objects.filter(start_date__range=(one_year_ago, seven_months_later)).order_by('-start_date')
+    events = Event.objects.filter(start_date__range=(one_year_ago, seven_months_later)).order_by('-start_date')
 
     context = {
-        'tournaments': tournaments,
+        'events': events,
     }
     return render(request, 'index.html', context)
 
