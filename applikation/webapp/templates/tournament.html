@@ -14,8 +14,8 @@
             <div class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 ease-in-out">
                 <div class="p-4">
                     <h2 class="text-xl font-semibold mb-2">{{ tournament.name }}</h2>
-                    <p class="text-gray-600">Start Date: {{ tournament.start_date }}</p>
-                    <p class="text-gray-600">End Date: {{ tournament.end_date }}</p>
+                    <p class="text-gray-600">Start Date: {{ tournament.start_date|date:"d. F Y" }}</p>
+                    <p class="text-gray-600">End Date: {{ tournament.end_date|date:"d. F Y" }}</p>
                 </div>
             </div>
         {% endfor %}

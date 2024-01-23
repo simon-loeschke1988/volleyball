@@ -25,8 +25,8 @@ def index(request):
     }
     return render(request, 'index.html', context)
 
-def tournament_list(request):
-    tournaments = BeachTournament.objects.all().distinct()  # Hier holen wir alle Turniere aus der Datenbank
+def tournament(request):
+    tournaments = BeachTournament.objects.all().distinct().order_by('-startdate')  # Hier holen wir alle Turniere aus der Datenbank
     return render(request, 'tournament.html', {'tournaments': tournaments})
 
 '''
@@ -59,7 +59,7 @@ def player(request):
     return render(request, 'player.html', context)
 
 '''
-
+'''
 def teams(request):
     teams = BeachTeam.objects.all()
 
@@ -83,5 +83,5 @@ def teams(request):
 
     return render(request, 'teams.html', {'teams': teams, 'query': query})
 
-
+'''
 
