@@ -47,7 +47,7 @@ class Command(BaseCommand):
             earned_points_team = int(team.attrib.get('EarnedPointsTeam') or 0)
             earnings_team = int(team.attrib.get('EarningsTeam') or 0)
 
-            BeachTeam.objects.update_or_create(
+            BeachTeam.objects.get_or_create(
                 name=team.attrib.get('Name'),
                 no=no_as_number,
                 defaults={

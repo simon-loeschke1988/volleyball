@@ -46,7 +46,7 @@ class Command(BaseCommand):
 
                 Event.objects.update_or_create(
                     no = event_data['no'],
-                    
+                    name = event_data['name'],                    
                     defaults=event_data,
                 )
 
