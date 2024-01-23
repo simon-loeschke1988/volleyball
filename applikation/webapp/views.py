@@ -18,7 +18,7 @@ def index(request):
     seven_months_later = today + timedelta(days=7 * 30)  # Ca. 7 Monate
 
     # Turniere filtern, die zwischen 5 Jahren zurück und 7 Monaten voraus starten
-    events = Event.objects.filter(start_date__range=(one_year_ago, seven_months_later)).order_by('-start_date')
+    events = Event.objects.filter(start_date__range=(one_year_ago, seven_months_later)).order_by('-start_date').distinct()
 
     context = {
         'events': events,
