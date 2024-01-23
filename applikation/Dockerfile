@@ -27,6 +27,8 @@ COPY --from=build-stage /app/static /code/static
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
+RUN python -m ensurepip
+
 # Virtuelle Umgebung erstellen und aktivieren
 #RUN python -m venv /code/venv
 #ENV PATH="/code/venv/bin:$PATH"
