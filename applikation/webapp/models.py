@@ -7,6 +7,17 @@ class BeachTeam(models.Model):
     earnings_team = models.PositiveIntegerField(null=True, blank=True)
     no = models.PositiveIntegerField(unique=False)
     version = models.PositiveIntegerField(null=True, blank=True)
+    
+    
+# Player Model definieren
+
+class Player (models.Model):
+    federation_code= models.CharField(max_length=100, null=True, blank=True)
+    first_name= models.CharField(max_length=100, null=True, blank=True)
+    last_name= models.CharField(max_length=100, null=True, blank=True)
+    nationality= models.CharField(max_length=100, null=True, blank=True)
+    plays_beach= models.BooleanField(null=True, blank=True)
+    no= models.IntegerField(primary_key=True)
 
 
 class BeachTournament(models.Model):
