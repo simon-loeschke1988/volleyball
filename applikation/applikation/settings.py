@@ -135,10 +135,10 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CELERY_BEAT_SCHEDULE = {
-    #'import-player-every-hour': {
-    #    'task': 'webapp.tasks.import_player_task',
-    #    'schedule': crontab(minute='*/1'),
-    #},
+    'import-player-every-hour': {
+        'task': 'webapp.tasks.import_player_task',
+        'schedule': crontab(minute='*/1'),
+    },
     'import-events-every-hour': {
         'task': 'webapp.tasks.import_events_task',
         'schedule': crontab(minute='*/1'),

@@ -1,9 +1,9 @@
 from celery import shared_task
 from django.core.management import call_command
 
-    #@shared_task
-    #def import_player_task():
-    #    call_command('import_player')
+@shared_task
+def import_player_task():
+    call_command('import_player')
 
 @shared_task
 def import_events_task():

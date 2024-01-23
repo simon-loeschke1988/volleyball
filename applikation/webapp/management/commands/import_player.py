@@ -9,13 +9,10 @@ class Command(BaseCommand):
     help = 'Import players from the specified XML request'
 
     def handle(self, *args, **kwargs):
-        # Löschen aller vorhandenen Spielerdaten
-        Player.objects.all().delete()
-
         # URL und Payload für den Request
         url = "https://www.fivb.org/vis2009/XmlRequest.asmx"
         payload = {
-            "Request": "<Request Type='GetPlayerList' Fields='FederationCode FirstName LastName Nationality No'/>"
+            "Request": "<Request Type='GetPlayerList' Fields='FederationCode FirstName LastName Nationality Gender No'/>"
         }
 
         # Ausführen des Requests
@@ -33,6 +30,7 @@ class Command(BaseCommand):
                 no_text = player.get('No')
                 no = int(no_text) if no_text is not None else None
                 nationality = player.get('Nationality')
+                gender = player.get('Gender')
 
                 data.append({
                     'federation_code': federation_code,
@@ -40,6 +38,7 @@ class Command(BaseCommand):
                     'last_name': last_name,
                     'no': no,
                     'nationality': nationality,
+                    'gender': gender,
                 })
 
             # Erstellen eines DataFrame aus den gesammelten Daten
@@ -47,7 +46,7 @@ class Command(BaseCommand):
 
             # Filtern der Daten
             df = df[df['no'].notnull() & df['first_name'].notnull()]
-            df = df[~df['first_name'].str.contains('\?|suspended', case=False, na=False)]
+            df = df[~df['first_name'].str.contains(r'\?|suspended', case=False, na=False)]
             df = df.drop_duplicates(subset=['no'])
 
             # Speichern der Daten in einer CSV-Datei
@@ -66,7 +65,10 @@ class Command(BaseCommand):
             except FileNotFoundError:
                 existing_hash = ''
 
-            if file_hash != existing_hash:
+            # Prüfen, ob die Tabelle leer ist oder sich der Hashwert geändert hat
+            should_import = not Player.objects.exists() or file_hash != existing_hash
+
+            if should_import:
                 with open(hash_file, 'w') as f:
                     f.write(file_hash)
 
@@ -78,8 +80,10 @@ class Command(BaseCommand):
                         last_name=row['last_name'],
                         no=row['no'],
                         nationality=row['nationality'],
+                        gender=row['gender'],
                     )
                     player_obj.save()
+                self.stdout.write(self.style.SUCCESS('Spielerdaten erfolgreich importiert.'))
             else:
                 self.stdout.write(self.style.SUCCESS('Keine neuen Daten zum Importieren.'))
         else:

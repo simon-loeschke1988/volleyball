@@ -15,6 +15,7 @@ class Player (models.Model):
     nationality= models.CharField(max_length=100, null=True, blank=True)
     plays_beach= models.BooleanField(null=True, blank=True)
     no= models.IntegerField(primary_key=True)
+    gender= models.CharField(max_length=100, null=True, blank=True)
 
 
 class BeachTournament(models.Model):

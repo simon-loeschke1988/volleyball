@@ -1,7 +1,7 @@
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render, get_object_or_404
 from django.template import loader
-from .models import  BeachTeam, BeachTournament, Event
+from .models import  BeachTeam, BeachTournament, Event, Player
 from django.db.models import Q
 from django.http import HttpResponse
 from django.utils.timezone import make_aware
@@ -25,11 +25,11 @@ def index(request):
     }
     return render(request, 'index.html', context)
 
-def tournament_list(request):
+def tournament(request):
     tournaments = BeachTournament.objects.all().distinct()  # Hier holen wir alle Turniere aus der Datenbank
     return render(request, 'tournament.html', {'tournaments': tournaments})
 
-'''
+
 def player(request):
     query_name = request.GET.get('name','')
     query_fedcode = request.GET.get('fedcode','')
@@ -58,7 +58,7 @@ def player(request):
 
     return render(request, 'player.html', context)
 
-'''
+
 
 def teams(request):
     teams = BeachTeam.objects.all()
