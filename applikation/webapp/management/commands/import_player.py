@@ -67,7 +67,7 @@ class Command(BaseCommand):
                 existing_hash = ''
 
             if file_hash != existing_hash:
-                with open(hash_file_player, 'w') as f:
+                with open(hash_file, 'w') as f:
                     f.write(file_hash)
 
                 # Importieren der Daten in die Datenbank
