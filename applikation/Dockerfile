@@ -36,11 +36,11 @@ RUN python -m ensurepip
 # Installieren von Python-Abhängigkeiten
 RUN pip install --upgrade pip wheel setuptools
 COPY requirements.txt /code/
-RUN  pip install --no-cache-dir -r /code/requirements.txt
+RUN  python -m pip install --no-cache-dir -r /code/requirements.txt
 
 # Kopieren des Django-Projektcodes
 COPY . /code/
 
 
 # Startkommando für Django
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+#CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
