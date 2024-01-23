@@ -1,7 +1,7 @@
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render, get_object_or_404
 from django.template import loader
-from .models import Player, BeachTeam, BeachMatch, BeachTournament, Event
+from .models import  BeachTeam, BeachTournament, Event
 from django.db.models import Q
 from django.http import HttpResponse
 from django.utils.timezone import make_aware

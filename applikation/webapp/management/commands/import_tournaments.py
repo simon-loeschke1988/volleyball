@@ -26,7 +26,7 @@ class Command(BaseCommand):
 
         # Payload für den Request erstellen
         payload_gettournamentlist = {
-            "Request": "<Request Type='GetBeachTournamentList' Fields='Code Name StartDateMainDraw EndDate FederationCode No'> </Request>"
+            "Request": "<Request Type='GetBeachTournamentList' Fields='Code Name StartDateMainDraw EndDateMainDraw FederationCode No'> </Request>"
         }
 
         # HTTP-Anfrage senden
@@ -41,28 +41,29 @@ class Command(BaseCommand):
             code = tournament.attrib.get('Code')
             name = tournament.attrib.get('Name')
             start_date_str = tournament.attrib.get('StartDateMainDraw')
-            #end_date_str = tournament.attrib.get('EndDate')
+            end_date_str = tournament.attrib.get('EndDateMainDraw')
             federation_code = tournament.attrib.get('FederationCode')
             no = tournament.attrib.get('No')
 
-            #if start_date_str:
-             #   start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
-            #else:
-            #    start_date = None
+            if start_date_str:
+               start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
+            else:
+               start_date = None
 
-            #if end_date_str:
-             #   end_date = datetime.strptime(end_date_str, '%Y-%m-%d')
-           # else:
-            #    end_date = None
+            if end_date_str:
+                end_date = datetime.strptime(end_date_str, '%Y-%m-%d')
+            else:
+                end_date = None
 
             BeachTournament.objects.update_or_create(
                 code=code,
+                no=no,
                 defaults={
                     'name': name,
-                    'start_date': start_date_str,
-                 #   'end_date': end_date,
+                    'start_date': start_date,
+                    'end_date': end_date,
                     'federation_code': federation_code,
-                    'no': no
+                    
                 }
             )
 
