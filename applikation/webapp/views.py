@@ -1,22 +1,39 @@
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.template import loader
-from .models import Player, BeachTeam, BeachMatch, BeachTournament
+from .models import Player, BeachTeam, BeachMatch, BeachTournament, Event
 from django.db.models import Q
 from django.http import HttpResponse
+from django.utils.timezone import make_aware
+from datetime import datetime, timedelta
 # Author: Simon Löschke
 # models
 
 # Create your views here.
 
 def index(request):
-    # Turniere nach dem neuesten Startdatum sortieren
-    tournaments = BeachTournament.objects.all().order_by('start_date')
+    # Aktuelles Datum und Datum für 5 Jahre zurück und 7 Monate voraus berechnen
+    today = make_aware(datetime.today())
+    one_year_ago = today - timedelta(days=1 * 365)
+    seven_months_later = today + timedelta(days=7 * 30)  # Ca. 7 Monate
+
+    # Turniere filtern, die zwischen 5 Jahren zurück und 7 Monaten voraus starten
+    events = Event.objects.filter(start_date__range=(one_year_ago, seven_months_later)).order_by('-start_date')
 
     context = {
-        'tournaments': tournaments,
+        'events': events,
     }
     return render(request, 'index.html', context)
+
+def tournament_matches(request, tournament_id):
+    tournament = get_object_or_404(BeachTournament, id=tournament_id)
+    matches = BeachMatch.objects.filter(no_tournament=tournament.no)  # Annahme: `no_tournament` korrespondiert mit `BeachTournament.no`
+
+    context = {
+        'tournament': tournament,
+        'matches': matches,
+    }
+    return render(request, 'tournament_matches.html', context)
 
 def player(request):
     query_name = request.GET.get('name','')

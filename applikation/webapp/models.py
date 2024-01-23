@@ -29,7 +29,7 @@ class BeachTeam(models.Model):
     rank = models.IntegerField(null=True, blank=True)
     earned_points_team = models.PositiveIntegerField(null=True, blank=True)
     earnings_team = models.PositiveIntegerField(null=True, blank=True)
-    no = models.PositiveIntegerField(unique=True)
+    no = models.PositiveIntegerField(unique=False)
     version = models.PositiveIntegerField(null=True, blank=True)
 
     def __str__(self):

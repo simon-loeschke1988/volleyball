@@ -27,6 +27,8 @@ COPY --from=build-stage /app/static /code/static
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
+RUN python -m ensurepip
+
 # Virtuelle Umgebung erstellen und aktivieren
 #RUN python -m venv /code/venv
 #ENV PATH="/code/venv/bin:$PATH"
@@ -34,11 +36,11 @@ ENV PYTHONUNBUFFERED 1
 # Installieren von Python-Abhängigkeiten
 RUN pip install --upgrade pip wheel setuptools
 COPY requirements.txt /code/
-RUN  pip install --no-cache-dir -r /code/requirements.txt
+RUN  python -m pip install --no-cache-dir -r /code/requirements.txt
 
 # Kopieren des Django-Projektcodes
 COPY . /code/
 
 
 # Startkommando für Django
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+#CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
