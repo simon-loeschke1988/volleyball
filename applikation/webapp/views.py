@@ -25,16 +25,11 @@ def index(request):
     }
     return render(request, 'index.html', context)
 
-def tournament_matches(request, tournament_id):
-    tournament = get_object_or_404(BeachTournament, id=tournament_id)
-    matches = BeachMatch.objects.filter(no_tournament=tournament.no)  # Annahme: `no_tournament` korrespondiert mit `BeachTournament.no`
+def tournament_list(request):
+    tournaments = BeachTournament.objects.all().distinct()  # Hier holen wir alle Turniere aus der Datenbank
+    return render(request, 'tournament.html', {'tournaments': tournaments})
 
-    context = {
-        'tournament': tournament,
-        'matches': matches,
-    }
-    return render(request, 'tournament_matches.html', context)
-
+'''
 def player(request):
     query_name = request.GET.get('name','')
     query_fedcode = request.GET.get('fedcode','')
@@ -63,6 +58,7 @@ def player(request):
 
     return render(request, 'player.html', context)
 
+'''
 
 def teams(request):
     teams = BeachTeam.objects.all()

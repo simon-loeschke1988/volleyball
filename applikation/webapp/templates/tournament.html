@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block description %} Startseite der Webseite {% endblock %}
+{% block keywords %} Startseite, Webseite {% endblock %}
+
+{%block title%} Startseite {% endblock %}
+
+{% block content %}
+
+    <h1 class="text-2xl font-bold mb-4">Tournament List</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {% for tournament in tournaments %}
+            <div class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 ease-in-out">
+                <div class="p-4">
+                    <h2 class="text-xl font-semibold mb-2">{{ tournament.name }}</h2>
+                    <p class="text-gray-600">Start Date: {{ tournament.start_date }}</p>
+                    <p class="text-gray-600">End Date: {{ tournament.end_date }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock content %}
