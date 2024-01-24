@@ -1,19 +1,14 @@
-from django.core.management.base import BaseCommand
-from xml.etree import ElementTree
 import requests
+from xml.etree import ElementTree
 import pandas as pd
 import hashlib
-
-from webapp.models import BeachTeam, BeachMatch
+from django.core.management.base import BaseCommand
+from webapp.models import BeachTeam, Player
 
 class Command(BaseCommand):
     help = "Import BeachTeams from XML API response"
 
     def handle(self, *args, **kwargs):
-        
-        # löschen der Tabelle BeachMatch da Fremdschlüssel
-        BeachMatch.objects.all().delete()
-        
         url = "https://www.fivb.org/vis2009/XmlRequest.asmx"
         payload = {
             "Request": "<Request Type='GetBeachTeamList' Fields='Name No NoPlayer1 NoPlayer2'></Request>"
@@ -32,7 +27,7 @@ class Command(BaseCommand):
             name = team.attrib.get('Name')
             NoPlayer1 = team.attrib.get('NoPlayer1')
             NoPlayer2 = team.attrib.get('NoPlayer2')
-  
+
             if name and '?' not in name and no_value:
                 data.append({
                     'name': name,
@@ -41,21 +36,15 @@ class Command(BaseCommand):
                     'NoPlayer2': NoPlayer2,
                 })
 
-        # Erstellen eines DataFrame aus den gesammelten Daten
         df = pd.DataFrame(data)
-
-        # Filtern der Daten
         df = df.drop_duplicates(subset=['no'])
 
-        # Speichern der Daten in einer CSV-Datei
         csv_file = 'beach_teams_data.csv'
         df.to_csv(csv_file, index=False)
 
-        # Berechnung des SHA256-Hashwerts der CSV-Datei
         with open(csv_file, 'rb') as f:
             file_hash = hashlib.sha256(f.read()).hexdigest()
 
-        # Speichern des Hashwerts in einer Datei
         hash_file = 'beach_teams_data_hash.txt'
         try:
             with open(hash_file, 'r') as f:
@@ -67,14 +56,31 @@ class Command(BaseCommand):
             with open(hash_file, 'w') as f:
                 f.write(file_hash)
 
-            # Importieren der Daten in die Datenbank
-            for index, row in df.iterrows():
-                BeachTeam.objects.update_or_create(
-                    name=row['name'],
-                    no=row['no'],
-                    NoPlayer1=row['NoPlayer1'],
-                    NoPlayer2=row['NoPlayer2'],
-                )
-            self.stdout.write(self.style.SUCCESS('BeachTeams erfolgreich importiert.'))
-        else:
-            self.stdout.write(self.style.SUCCESS('Keine neuen Daten zum Importieren.'))
+            while not Player.objects.exists():
+                self.stdout.write(self.style.ERROR('Player Tabelle ist leer. Bitte zuerst Player importieren.'))
+                return
+            else:
+
+                for index, row in df.iterrows():
+                    # Sicherstellen, dass die Spieler-IDs korrekt als Integer behandelt werden
+                    player_1_id = pd.to_numeric(row['NoPlayer1'], errors='coerce', downcast='integer')
+                    player_2_id = pd.to_numeric(row['NoPlayer2'], errors='coerce', downcast='integer')
+
+                    # Suchen der Player-Objekte
+                    player_1 = Player.objects.filter(no=player_1_id).first() if not pd.isna(player_1_id) else None
+                    player_2 = Player.objects.filter(no=player_2_id).first() if not pd.isna(player_2_id) else None
+
+                    if player_1 and player_2:
+                        BeachTeam.objects.update_or_create(
+                            no=row['no'],
+                            defaults={
+                                'name': row['name'],
+                                'NoPlayer1': player_1,
+                                'NoPlayer2': player_2,
+                            }
+                        )
+                    else:
+                        self.stdout.write('Es konnte keine Instanz des Teams angelegt werden. Player nicht gefunden')
+                else:
+                    self.stdout.write(self.style.SUCCESS('Successfully imported BeachTeams'))
+

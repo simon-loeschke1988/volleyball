@@ -10,9 +10,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         
-        # Löschen der Teams in der Datenbank, da Fremdschlüsselbeziehung zu Spielern besteht
-        BeachTeam.objects.all().delete()
-        BeachMatch.objects.all().delete()
+      
+        
         
         # URL und Payload für den Request
         url = "https://www.fivb.org/vis2009/XmlRequest.asmx"
@@ -76,9 +75,14 @@ class Command(BaseCommand):
             if should_import:
                 with open(hash_file, 'w') as f:
                     f.write(file_hash)
-
+                  # Löschen der Teams in der Datenbank, da Fremdschlüsselbeziehung zu Spielern besteht, wenn die
+                  # Tabelle Spieler nicht leer ist
+ 
+                BeachTeam.objects.all().delete()
+                BeachMatch.objects.all().delete()
                 # Importieren der Daten in die Datenbank
                 for index, row in df.iterrows():
+                    
                     player_obj = Player(
                         federation_code=row['federation_code'],
                         first_name=row['first_name'],

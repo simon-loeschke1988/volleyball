@@ -11,14 +11,14 @@ class Command(BaseCommand):
     def parse_date(self, date_string):
         if not date_string:
             return None
-        return datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S')
+        return datetime.strptime(date_string, '%Y-%m-%d')
 
     def handle(self, *args, **kwargs):
         url = "https://www.fivb.org/vis2009/XmlRequest.asmx"
         payload = {
             "Request": "<Request Type='GetEventList' Fields='Code Name StartDate No EndDate'> <Filter IsVisManaged='True' NoParentEvent='0' HasBeachTournament='True' /> </Request>"
         }
-
+        
         try:
             response = requests.get(url, params=payload)
             if response.status_code != 200:
@@ -38,8 +38,17 @@ class Command(BaseCommand):
                         'name': event_xml.attrib.get('Name'),
                         'start_date': start_date,
                         'end_date': end_date,
-                        'no': event_xml.attrib.get('No'),
+                        'no': int(event_xml.attrib.get('No')),
                         'version': int(event_xml.attrib.get('Version')) if event_xml.attrib.get('Version') else None
+                    })
+            # zum dataframe das Event mit der Nummer 0 hinzufügen
+            data.append({
+                        'code': 0,
+                        'name': 'No Event',
+                        'start_date': None,
+                        'end_date': None,
+                        'no': '0',
+                        'version': None
                     })
 
             # Erstellen eines DataFrame aus den gesammelten Daten
@@ -55,6 +64,10 @@ class Command(BaseCommand):
                     no=row['no'],
                     defaults=row.to_dict(),
                 )
+                
+
+            # auf jeden fall ein Event mit der Nummer 0 anlegen
+            
 
             if df.empty:
                 self.stdout.write(self.style.WARNING('Keine Events zum Importieren gefunden'))

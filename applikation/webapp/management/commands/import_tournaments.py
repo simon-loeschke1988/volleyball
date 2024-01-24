@@ -12,7 +12,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         
         # löschen der Tabelle Event da Fremdschlüssel
-        Event.objects.all().delete()
+        
         
         url = "https://www.fivb.org/vis2009/XmlRequest.asmx"
         payload_gettournamentlist = {
@@ -28,22 +28,37 @@ class Command(BaseCommand):
         data = []
 
         for tournament in xml_response.findall('BeachTournament'):
-            data.append({
-                'code': tournament.attrib.get('Code'),
-                'name': tournament.attrib.get('Name'),
-                'start_date_str': tournament.attrib.get('StartDateMainDraw'),
-                'end_date_str': tournament.attrib.get('EndDateMainDraw'),
-                'federation_code': tournament.attrib.get('FederationCode'),
-                'no': tournament.attrib.get('No'),
-                'gender': tournament.attrib.get('Gender'),
-                'noevent': tournament.attrib.get('NoEvent') or '',
-            })
+            start_date_str = tournament.attrib.get('StartDateMainDraw')
+            end_date_str = tournament.attrib.get('EndDateMainDraw')
+            if start_date_str and end_date_str:
+                data.append({
+                    'code': tournament.attrib.get('Code'),
+                    'name': tournament.attrib.get('Name'),
+                    'start_date_str': tournament.attrib.get('StartDateMainDraw'),
+                    'end_date_str': tournament.attrib.get('EndDateMainDraw'),
+                    'federation_code': tournament.attrib.get('FederationCode'),
+                    'no': int(tournament.attrib.get('No')),
+                    'gender': tournament.attrib.get('Gender'),
+                    'noevent': tournament.attrib.get('NoEvent'),
+                })
 
         df = pd.DataFrame(data)
+       
         df['start_date'] = pd.to_datetime(df['start_date_str'], errors='coerce')
         df['end_date'] = pd.to_datetime(df['end_date_str'], errors='coerce')
+        df['start_date'] = df['start_date'].apply(lambda x: x if pd.notna(x) else None)
+        df['end_date'] = df['end_date'].apply(lambda x: x if pd.notna(x) else None)
         df = df.drop(['start_date_str', 'end_date_str'], axis=1)
         df = df.drop_duplicates(subset=['no'])
+        df['noevent'] = df['noevent'].replace('', '0')
+        df['noevent'] = pd.to_numeric(df['noevent'], errors='coerce').fillna(0).astype(int)
+       # df = df.dropna(subset=['no','noevent'])
+       
+       
+       
+
+        
+     
 
         # Speichern der Daten in einer CSV-Datei
         csv_file = 'beach_tournaments_data.csv'
@@ -64,24 +79,32 @@ class Command(BaseCommand):
         # Prüfen, ob die Tabelle leer ist oder sich der Hashwert geändert hat
         should_import = not BeachTournament.objects.exists() or file_hash != existing_hash
 
-        if should_import:
-            with open(hash_file, 'w') as f:
-                f.write(file_hash)
 
-            # Importieren der Daten in die Datenbank
-            for index, row in df.iterrows():
-                BeachTournament.objects.update_or_create(
-                    code=row['code'],
-                    no=row['no'],
-                    defaults={
-                        'name': row['name'],
-                        'start_date': row['start_date'],
-                        'end_date': row['end_date'],
-                        'federation_code': row['federation_code'],
-                        'gender': row['gender'],
-                        'noevent': row['noevent'],
-                    }
-                )
-            self.stdout.write(self.style.SUCCESS('BeachTournaments erfolgreich importiert.'))
+        while not Event.objects.exists():
+            self.stdout.write(self.style.ERROR('Event Tabelle ist leer. Bitte zuerst Events importieren.'))
+
         else:
-            self.stdout.write(self.style.SUCCESS('Keine neuen Daten zum Importieren.'))
+            if should_import:
+                with open(hash_file, 'w') as f:
+                    f.write(file_hash)
+                
+                        
+
+                # Importieren der Daten in die Datenbank
+                for index, row in df.iterrows():
+                    BeachTournament.objects.update_or_create(
+                        code=row['code'],
+                        no=row['no'],
+                        defaults={
+                            'name': row['name'],
+                            'start_date': row['start_date'],
+                            'end_date': row['end_date'],
+                            'federation_code': row['federation_code'],
+                            'gender': row['gender'],
+                            
+                            'eventnummer': row['noevent'],
+                        }
+                    )
+                self.stdout.write(self.style.SUCCESS('BeachTournaments erfolgreich importiert.'))
+            else:
+                self.stdout.write(self.style.SUCCESS('Keine neuen Daten zum Importieren.'))

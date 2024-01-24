@@ -9,7 +9,7 @@
 
     <h1 class="text-2xl font-bold mb-4">Tournament List</h1>
 
-    <form method="get" action="{% url 'tournament' %}">
+    <form method="get" action="{% url 'webapp:tournament' %}">
         <select name="event_id" onchange="this.form.submit()">
             <option value="">Wähle ein Event</option>
             {% for event in events %}

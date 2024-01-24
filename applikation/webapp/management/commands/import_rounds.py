@@ -8,9 +8,6 @@ class Command(BaseCommand):
     help = "Import BeachRounds from XML API response"
 
     def handle(self, *args, **kwargs):
-        # Löschen der Tabelle BeachTournament, da Fremdschlüsselbeziehung zu BeachRound
-        BeachTournament.objects.all().delete()
-
         # URL und Payload für die API-Anfrage
         url = "https://www.fivb.org/vis2009/XmlRequest.asmx"
         payload = {
@@ -33,15 +30,15 @@ class Command(BaseCommand):
             code = round.attrib.get('Code')
             name = round.attrib.get('Name')
             bracket = round.attrib.get('Bracket')
-            NoTournament = round.attrib.get('NoTournament')
+            NoTournament_id = round.attrib.get('NoTournament')
 
-            if None not in [no, code, name, bracket, NoTournament]:
+            if None not in [no, code, name, bracket, NoTournament_id]:
                 data.append({
                     'no': no,
                     'code': code,
                     'name': name,
                     'bracket': bracket,
-                    'NoTournament': NoTournament,
+                    'NoTournament_id': int(NoTournament_id),
                 })
 
         # Erstellen eines DataFrame aus den gesammelten Daten
@@ -51,30 +48,25 @@ class Command(BaseCommand):
         df = df.dropna()
         df = df.drop_duplicates(subset=['no'])
 
-        # Importieren der bereinigten Daten in die Datenbank
-        for index, row in df.iterrows():
-            BeachRound.objects.update_or_create(
-                no=row['no'],
-                defaults={
-                    'code': row['code'],
-                    'name': row['name'],
-                    'bracket': row['bracket'],
-                    'NoTournament': row['NoTournament'],
-                }
-            )
+        while not BeachTournament.objects.exists():
+            self.stdout.write(self.style.ERROR('BeachTournament Tabelle ist leer. Bitte zuerst BeachTournaments importieren.'))
+            return
+        else:                                                            
+            # Importieren der bereinigten Daten in die Datenbank
+            for index, row in df.iterrows():
+                tournament_instance = BeachTournament.objects.filter(no=row['NoTournament_id']).first()
+                if tournament_instance:
+                    BeachRound.objects.update_or_create(
+                        no=row['no'],
+                        defaults={
+                            'code': row['code'],
+                            'name': row['name'],
+                            'bracket': row['bracket'],
+                            'NoTournament': tournament_instance,
+                        }
+                    )
 
-        if df.empty:
-            self.stdout.write(self.style.WARNING('Keine BeachRound Elemente zum Importieren gefunden'))
-        else:
-            self.stdout.write(self.style.SUCCESS('BeachRounds erfolgreich importiert.'))
-
-        
-                
-
-        try:
-            raise Exception("An error occurred")
-        except Exception as e:
-            print(e)
-            #logger.error(f"Failed to import round with No: {no} - {str(e)}")
-
-            
+            if df.empty:
+                self.stdout.write(self.style.WARNING('Keine BeachRound Elemente zum Importieren gefunden'))
+            else:
+                self.stdout.write(self.style.SUCCESS('BeachRounds erfolgreich importiert.'))                        
