@@ -1,11 +1,10 @@
-{% load static %}
 {% extends 'base.html'%}
 
 {% block title %}Beach Matches{% endblock %}
 {% block content %}
 
         <!-- Filter Formular -->
-        <form method="get" action="{% url 'webapp:matches' %}" class="mb-6 flex flex-wrap">
+        <form method="get" action="{% url 'webapp:beach_matches' %}" class="mb-6 flex flex-wrap">
             <!-- Dropdown für Federation -->
             <select name="federation_code" class="p-2 rounded border border-gray-300 mr-2 mb-2">
                 <option value="">Wähle eine Federation</option>
