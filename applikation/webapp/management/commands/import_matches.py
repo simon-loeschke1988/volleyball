@@ -42,8 +42,6 @@ class Command(BaseCommand):
         df = pd.DataFrame(data)
         df = df.dropna()
         df = df.drop_duplicates(subset=['No'])
-        df = df.replace['NoTeamA']('', 0)
-        df = df.replace['NoTeamB']('', 0)
         df = df.astype({'No': 'int32', 'NoInTournament': 'int32', 'NoTeamA': 'int32', 'NoTeamB': 'int32', 'NoRound': 'int32', 'NoTournament': 'int32'})
 
 
@@ -58,7 +56,9 @@ class Command(BaseCommand):
                 Round = BeachRound.objects.get(no=row['NoRound'])
                 Tournament = BeachTournament.objects.get(no=row['NoTournament'])
 
-                BeachMatch.objects.update_or_create(
+                try:
+
+                    BeachMatch.objects.update_or_create(
                     No=row['No'],
                     defaults={
                         'NoInTournament': row['NoInTournament'],
@@ -72,7 +72,10 @@ class Command(BaseCommand):
                         'NoRound': Round,
                         'NoTournament': Tournament,
                     }
-                )
+                    )
+                except Exception as e:
+                    self.stdout.write(self.style.WARNING(f'Fehler bein Import {e}'))
+                    continue
             except (BeachTeam.DoesNotExist, BeachRound.DoesNotExist, BeachTournament.DoesNotExist) as e:
                 self.stdout.write(self.style.WARNING(f'Fehler beim Importieren eines Matches: {e}'))
 
