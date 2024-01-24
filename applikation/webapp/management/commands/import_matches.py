@@ -42,6 +42,10 @@ class Command(BaseCommand):
         df = pd.DataFrame(data)
         df = df.dropna()
         df = df.drop_duplicates(subset=['No'])
+        df = df.replace['NoTeamA']('', 0)
+        df = df.replace['NoTeamB']('', 0)
+        df = df.astype({'No': 'int32', 'NoInTournament': 'int32', 'NoTeamA': 'int32', 'NoTeamB': 'int32', 'NoRound': 'int32', 'NoTournament': 'int32'})
+
 
         if not (BeachRound.objects.exists() and BeachTournament.objects.exists()):
             self.stdout.write(self.style.WARNING('Bitte importieren Sie zuerst die BeachRound und BeachTournament Daten'))
