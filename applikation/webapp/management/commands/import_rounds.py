@@ -64,7 +64,7 @@ class Command(BaseCommand):
         # except FileNotFoundError:
         #     existing_hash = ''
         
-        should_import = existing_hash != file_hash
+        #should_import = existing_hash != file_hash
 
     
         while not BeachTournament.objects.exists():
