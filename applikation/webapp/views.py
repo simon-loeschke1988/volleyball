@@ -100,38 +100,65 @@ def teams(request):
 
 
 def beach_matches(request):
-    federation_code = request.GET.get('federation_code')
-    country = request.GET.get('country')
-    event_id = request.GET.get('event_id')
-    tournament_id = request.GET.get('tournament_id')
-    team_id = request.GET.get('team_id')
+    current_year = datetime.now().year
+    last_year = current_year - 1
 
-    matches = BeachMatch.objects.all()
+    start_date_last_year = datetime(last_year, 1, 1)
+    end_date_this_year = datetime(current_year, 12, 31)
+
+    # Filtern der Matches für das letzte und dieses Jahr
+    matches = BeachMatch.objects.filter(LocalDate__range=(start_date_last_year, end_date_this_year)).order_by('-LocalDate')
+
+    # Filtern basierend auf den Anfrageparametern
+    federation_code = request.GET.get('federation_code')
+    nationality = request.GET.get('nationality')
+    event_no = request.GET.get('event_no')
+    tournament_no = request.GET.get('tournament_no')
+    team_name = request.GET.get('team_name')
 
     if federation_code:
-        matches = matches.filter(Q(team_a__federation_code=federation_code) | Q(team_b__federation_code=federation_code))
-    if country:
-        matches = matches.filter(Q(team_a__players__country=country) | Q(team_b__players__country=country))
-    if event_id:
-        matches = matches.filter(event__id=event_id)
-    if tournament_id:
-        matches = matches.filter(tournament__id=tournament_id)
-    if team_id:
-        matches = matches.filter(Q(team_a__id=team_id) | Q(team_b__id=team_id))
+        matches = matches.filter(Q(NoTeamA__federation_code=federation_code) | Q(NoTeamB__federation_code=federation_code))
+    if nationality:
+        matches = matches.filter(Q(NoTeamA__nationality=nationality) | Q(NoTeamB__nationality=nationality))
+    if event_no:
+        matches = matches.filter(NoEvent__no=event_no)
+    if tournament_no:
+        matches = matches.filter(NoTournament__no=tournament_no)
+    if team_name:
+        matches = matches.filter(Q(NoTeamA__name=team_name) | Q(NoTeamB__name=team_name))
 
-    federations = BeachTeam.values_list('federation_code', flat=True).distinct()
-    countries = Player.objects.values_list('country', flat=True).distinct()
+    # Ermitteln der Team-IDs aus den gefilterten Matches
+    team_ids = set()
+    for match in matches:
+        if match.NoTeamA:
+            team_ids.add(match.NoTeamA.no)
+        if match.NoTeamB:
+            team_ids.add(match.NoTeamB.no)
+
+    # Filtern der Teams basierend auf den ermittelten IDs
+    teams = BeachTeam.objects.filter(no__in=team_ids)
+
+    # Paginierung
+    page = request.GET.get('page', 1)
+    paginator = Paginator(matches, 20)
+    try:
+        matches_page = paginator.page(page)
+    except PageNotAnInteger:
+        matches_page = paginator.page(1)
+    except EmptyPage:
+        matches_page = paginator.page(paginator.num_pages)
+
+    # Abrufen der weiteren notwendigen Daten
+    federations = Player.objects.values_list('federation_code', flat=True).distinct()
+    countries = Player.objects.values_list('nationality', flat=True).distinct()
     events = Event.objects.all()
     tournaments = BeachTournament.objects.all()
-    teams = BeachTeam.objects.all()
 
     return render(request, 'matches.html', {
-        'matches': matches,
+        'matches': matches_page,
         'federations': federations,
         'countries': countries,
         'events': events,
         'tournaments': tournaments,
         'teams': teams
     })
-
-
