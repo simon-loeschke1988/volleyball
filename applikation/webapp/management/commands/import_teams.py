@@ -39,48 +39,51 @@ class Command(BaseCommand):
         df = pd.DataFrame(data)
         df = df.drop_duplicates(subset=['no'])
 
-        csv_file = 'beach_teams_data.csv'
-        df.to_csv(csv_file, index=False)
+        # csv_file = 'beach_teams_data.csv'
+        # df.to_csv(csv_file, index=False)
 
-        with open(csv_file, 'rb') as f:
-            file_hash = hashlib.sha256(f.read()).hexdigest()
+        # with open(csv_file, 'rb') as f:
+        #     file_hash = hashlib.sha256(f.read()).hexdigest()
 
-        hash_file = 'beach_teams_data_hash.txt'
-        try:
-            with open(hash_file, 'r') as f:
-                existing_hash = f.read()
-        except FileNotFoundError:
-            existing_hash = ''
+        # hash_file = 'beach_teams_data_hash.txt'
+        # try:
+        #     with open(hash_file, 'r') as f:
+        #         existing_hash = f.read()
+        # except FileNotFoundError:
+        #     existing_hash = ''
 
-        if file_hash != existing_hash:
-            with open(hash_file, 'w') as f:
-                f.write(file_hash)
+        # if file_hash != existing_hash or not BeachTeam.objects.exists():
+        #     with open(hash_file, 'w') as f:
+        #         f.write(file_hash)
 
-            while not Player.objects.exists():
-                self.stdout.write(self.style.ERROR('Player Tabelle ist leer. Bitte zuerst Player importieren.'))
-                return
-            else:
+        while not Player.objects.exists():
+            self.stdout.write(self.style.ERROR('Player Tabelle ist leer. Bitte zuerst Player importieren.'))
+            return
+        else:
 
-                for index, row in df.iterrows():
-                    # Sicherstellen, dass die Spieler-IDs korrekt als Integer behandelt werden
-                    player_1_id = pd.to_numeric(row['NoPlayer1'], errors='coerce', downcast='integer')
-                    player_2_id = pd.to_numeric(row['NoPlayer2'], errors='coerce', downcast='integer')
+            for index, row in df.iterrows():
+                # Sicherstellen, dass die Spieler-IDs korrekt als Integer behandelt werden
+                player_1_id = pd.to_numeric(row['NoPlayer1'], errors='coerce', downcast='integer')
+                player_2_id = pd.to_numeric(row['NoPlayer2'], errors='coerce', downcast='integer')
 
-                    # Suchen der Player-Objekte
-                    player_1 = Player.objects.filter(no=player_1_id).first() if not pd.isna(player_1_id) else None
-                    player_2 = Player.objects.filter(no=player_2_id).first() if not pd.isna(player_2_id) else None
+                # Suchen der Player-Objekte
+                player_1 = Player.objects.filter(no=player_1_id).first() if not pd.isna(player_1_id) else None
+                #self.stdout.write(f'player_1: {player_1} found')
+                player_2 = Player.objects.filter(no=player_2_id).first() if not pd.isna(player_2_id) else None
+                #self.stdout.write(f'player_2: {player_2} found')
 
-                    if player_1 and player_2:
-                        BeachTeam.objects.update_or_create(
-                            no=row['no'],
-                            defaults={
-                                'name': row['name'],
-                                'NoPlayer1': player_1,
-                                'NoPlayer2': player_2,
-                            }
-                        )
-                    else:
-                        self.stdout.write('Es konnte keine Instanz des Teams angelegt werden. Player nicht gefunden')
+                if player_1 and player_2:
+                    #self.stdout.write(f'Creating BeachTeam instance for {row["name"]}')
+                    BeachTeam.objects.update_or_create(
+                        no=row['no'],
+                        defaults={
+                            'name': row['name'],
+                            'NoPlayer1': player_1,
+                            'NoPlayer2': player_2,
+                        }
+                    )
                 else:
-                    self.stdout.write(self.style.SUCCESS('Successfully imported BeachTeams'))
+                    self.stdout.write('Es konnte keine Instanz des Teams angelegt werden. Player nicht gefunden')
+            else:
+                self.stdout.write(self.style.SUCCESS('Successfully imported BeachTeams'))
 

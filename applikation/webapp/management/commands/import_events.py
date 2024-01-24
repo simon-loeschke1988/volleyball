@@ -1,3 +1,4 @@
+import hashlib
 from django.core.management.base import BaseCommand
 from xml.etree import ElementTree
 import requests
@@ -58,13 +59,32 @@ class Command(BaseCommand):
             df = df.dropna(subset=['start_date', 'end_date', 'no'])
             df = df.drop_duplicates(subset=['no'])
 
+            csv_file = 'beach_events_data.csv'
+            df.to_csv(csv_file, index=False)
+
+            # Berechnung des SHA256-Hashwerts der CSV-Datei
+            with open(csv_file, 'rb') as f:
+                file_hash = hashlib.sha256(f.read()).hexdigest()
+
+            # Speichern des Hashwerts in einer Datei
+            hash_file = 'beach_events_data_hash.txt'
+            try:
+                with open(hash_file, 'r') as f:
+                    existing_hash = f.read()
+            except FileNotFoundError:
+                existing_hash = ''
+            
+            should_import = existing_hash != file_hash
+
+            if should_import or not Event.objects.exists():
+
             # Importieren der bereinigten Daten in die Datenbank
-            for index, row in df.iterrows():
-                Event.objects.update_or_create(
-                    no=row['no'],
-                    defaults=row.to_dict(),
-                )
-                
+                for index, row in df.iterrows():
+                    Event.objects.update_or_create(
+                        no=row['no'],
+                        defaults=row.to_dict(),
+                    )
+                    
 
             # auf jeden fall ein Event mit der Nummer 0 anlegen
             

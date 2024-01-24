@@ -3,6 +3,7 @@ from xml.etree import ElementTree
 import pandas as pd
 from django.core.management.base import BaseCommand
 from webapp.models import BeachRound, BeachTournament
+import hashlib
 
 class Command(BaseCommand):
     help = "Import BeachRounds from XML API response"
@@ -48,25 +49,46 @@ class Command(BaseCommand):
         df = df.dropna()
         df = df.drop_duplicates(subset=['no'])
 
-        while not BeachTournament.objects.exists():
-            self.stdout.write(self.style.ERROR('BeachTournament Tabelle ist leer. Bitte zuerst BeachTournaments importieren.'))
-            return
-        else:                                                            
-            # Importieren der bereinigten Daten in die Datenbank
-            for index, row in df.iterrows():
-                tournament_instance = BeachTournament.objects.filter(no=row['NoTournament_id']).first()
-                if tournament_instance:
-                    BeachRound.objects.update_or_create(
-                        no=row['no'],
-                        defaults={
-                            'code': row['code'],
-                            'name': row['name'],
-                            'bracket': row['bracket'],
-                            'NoTournament': tournament_instance,
-                        }
-                    )
+        csv_file = 'beach_ROUNDS_data.csv'
+        df.to_csv(csv_file, index=False)
 
-            if df.empty:
-                self.stdout.write(self.style.WARNING('Keine BeachRound Elemente zum Importieren gefunden'))
-            else:
-                self.stdout.write(self.style.SUCCESS('BeachRounds erfolgreich importiert.'))                        
+        # Berechnung des SHA256-Hashwerts der CSV-Datei
+        with open(csv_file, 'rb') as f:
+            file_hash = hashlib.sha256(f.read()).hexdigest()
+
+        # Speichern des Hashwerts in einer Datei
+        hash_file = 'beach_ROUNDS_data_hash.txt'
+        try:
+            with open(hash_file, 'r') as f:
+                existing_hash = f.read()
+        except FileNotFoundError:
+            existing_hash = ''
+        
+        should_import = existing_hash != file_hash
+
+        if  should_import or not BeachRound.objects.exists():
+            with open(hash_file, 'w') as f:
+                    f.write(file_hash)
+
+            while not BeachTournament.objects.exists():
+                self.stdout.write(self.style.ERROR('BeachTournament Tabelle ist leer. Bitte zuerst BeachTournaments importieren.'))
+                return
+            else:                                                            
+                # Importieren der bereinigten Daten in die Datenbank
+                for index, row in df.iterrows():
+                    tournament_instance = BeachTournament.objects.filter(no=row['NoTournament_id']).first()
+                    if tournament_instance:
+                        BeachRound.objects.update_or_create(
+                            no=row['no'],
+                            defaults={
+                                'code': row['code'],
+                                'name': row['name'],
+                                'bracket': row['bracket'],
+                                'NoTournament': tournament_instance,
+                            }
+                        )
+
+                if df.empty:
+                    self.stdout.write(self.style.WARNING('Keine BeachRound Elemente zum Importieren gefunden'))
+                else:
+                    self.stdout.write(self.style.SUCCESS('BeachRounds erfolgreich importiert.'))                        
