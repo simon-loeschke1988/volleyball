@@ -121,7 +121,7 @@ TIME_ZONE = 'Europe/Berlin'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -135,28 +135,31 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CELERY_BEAT_SCHEDULE = {
-    'import-player-every-hour': {
-        'task': 'webapp.tasks.import_player_task',
-        'schedule': crontab(minute='*/1'),
-    },
-    'import-events-every-hour': {
-        'task': 'webapp.tasks.import_events_task',
-        'schedule': crontab(minute=10),
-    },
-    'import-rounds-every-hour': {
-        'task': 'webapp.tasks.import_rounds_task',
-        'schedule': crontab(minute='*/1'),
-    },
-    'import-matches-every-hour': {
-        'task': 'webapp.tasks.import_matches_task',
-        'schedule': crontab(minute='*/1'),
-    },
     'import-tournaments-every-hour': {
         'task': 'webapp.tasks.import_tournaments_task',
+        'schedule': crontab(minute='*/1'),
+    },
+    'import-player-every-hour': {
+        'task': 'webapp.tasks.import_player_task',
         'schedule': crontab(minute='*/1'),
     },
     'import-teams-every-hour': {
         'task': 'webapp.tasks.import_teams_task',
         'schedule': crontab(minute='*/1'),
     },
+    
+    'import-rounds-every-hour': {
+       'task': 'webapp.tasks.import_rounds_task',
+       'schedule': crontab(minute='*/1'),
+    },
+    'import-matches-every-hour': {
+       'task': 'webapp.tasks.import_matches_task',
+       'schedule': crontab(minute='*/1'),
+    },
+   
+    
+    'import-events-every-hour': {
+        'task': 'webapp.tasks.import_events_task',
+        'schedule': crontab(minute='*/1'),
+    },    
 }

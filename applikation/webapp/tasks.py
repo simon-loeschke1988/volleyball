@@ -11,11 +11,11 @@ def import_events_task():
 
 @shared_task
 def import_rounds_task():
-    call_command('import_rounds')
+   call_command('import_rounds')
 
 @shared_task
 def import_matches_task():
-    call_command('import_matches')
+   call_command('import_matches')
 
 @shared_task
 def import_tournaments_task():

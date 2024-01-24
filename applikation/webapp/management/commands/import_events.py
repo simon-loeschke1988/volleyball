@@ -1,61 +1,98 @@
+import hashlib
 from django.core.management.base import BaseCommand
 from xml.etree import ElementTree
 import requests
-#import logging
+import pandas as pd
 from datetime import datetime
-
 from webapp.models import Event
-
-##logger = logging.get#logger(__name__)
-#logger.setLevel(logging.DEBUG)
-
-#file_handler = logging.FileHandler('logs/event_import.log')
-#file_handler.setLevel(logging.DEBUG)
-
-#formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-#file_handler.setFormatter(formatter)
-
-#logger.addHandler(file_handler)
 
 class Command(BaseCommand):
     help = "Import Events from XML API response"
 
+    def parse_date(self, date_string):
+        if not date_string:
+            return None
+        return datetime.strptime(date_string, '%Y-%m-%d')
+
     def handle(self, *args, **kwargs):
         url = "https://www.fivb.org/vis2009/XmlRequest.asmx"
         payload = {
-            "Request": "<Request Type='GetEventList' Fields='Code Name StartDate EndDate'> <Filter IsVisManaged='True' NoParentEvent='0' HasBeachTournament='True' /> </Request>"
+            "Request": "<Request Type='GetEventList' Fields='Code Name StartDate No EndDate'> <Filter IsVisManaged='True' NoParentEvent='0' HasBeachTournament='True' /> </Request>"
         }
-
+        
         try:
             response = requests.get(url, params=payload)
             if response.status_code != 200:
-                #logger.error(f"Failed to retrieve data with status code: {response.status_code}")
+                self.stdout.write(self.style.ERROR('Failed to retrieve data'))
                 return
 
             xml_response = ElementTree.fromstring(response.content)
+            data = []
 
             for event_xml in xml_response.findall('Event'):
-                event_data = {
-                    'code': event_xml.attrib.get('Code', None),
-                    'name': event_xml.attrib.get('Name', None),
-                    'start_date': event_xml.attrib.get('StartDate', None),
-                    'end_date': event_xml.attrib.get('EndDate', None),
-                    'no': event_xml.attrib.get('No', None),
-                    'version': int(event_xml.attrib.get('Version')) if event_xml.attrib.get('Version') else None
-                }
+                start_date = self.parse_date(event_xml.attrib.get('StartDate'))
+                end_date = self.parse_date(event_xml.attrib.get('EndDate'))
 
-                Event.objects.update_or_create(
-                    no = event_data['no'],
+                if start_date and end_date:
+                    data.append({
+                        'code': event_xml.attrib.get('Code'),
+                        'name': event_xml.attrib.get('Name'),
+                        'start_date': start_date,
+                        'end_date': end_date,
+                        'no': int(event_xml.attrib.get('No')),
+                        'version': int(event_xml.attrib.get('Version')) if event_xml.attrib.get('Version') else None
+                    })
+            # zum dataframe das Event mit der Nummer 0 hinzufügen
+            data.append({
+                        'code': 0,
+                        'name': 'No Event',
+                        'start_date': None,
+                        'end_date': None,
+                        'no': '0',
+                        'version': None
+                    })
+
+            # Erstellen eines DataFrame aus den gesammelten Daten
+            df = pd.DataFrame(data)
+
+            # Filtern der Daten
+            df = df.dropna(subset=['start_date', 'end_date', 'no'])
+            df = df.drop_duplicates(subset=['no'])
+
+            csv_file = 'beach_events_data.csv'
+            df.to_csv(csv_file, index=False)
+
+            # Berechnung des SHA256-Hashwerts der CSV-Datei
+            with open(csv_file, 'rb') as f:
+                file_hash = hashlib.sha256(f.read()).hexdigest()
+
+            # Speichern des Hashwerts in einer Datei
+            hash_file = 'beach_events_data_hash.txt'
+            try:
+                with open(hash_file, 'r') as f:
+                    existing_hash = f.read()
+            except FileNotFoundError:
+                existing_hash = ''
+            
+            should_import = existing_hash != file_hash
+
+            if should_import or not Event.objects.exists():
+
+            # Importieren der bereinigten Daten in die Datenbank
+                for index, row in df.iterrows():
+                    Event.objects.update_or_create(
+                        no=row['no'],
+                        defaults=row.to_dict(),
+                    )
                     
-                    defaults=event_data,
-                )
 
-                #logger.info(f"Successfully imported/updated event {event_data['name']}")
+            # auf jeden fall ein Event mit der Nummer 0 anlegen
+            
+
+            if df.empty:
+                self.stdout.write(self.style.WARNING('Keine Events zum Importieren gefunden'))
+            else:
+                self.stdout.write(self.style.SUCCESS('Events erfolgreich importiert.'))
+
         except requests.RequestException as e:
-            #logger.error(f"Request failed: {e}")
-
-            def parse_date(self, date_string):
-                if not date_string:
-                    return None
-
-                return datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S')
+            self.stdout.write(self.style.ERROR(f'An error occurred: {e}'))

@@ -1,24 +1,8 @@
 from django.core.management.base import BaseCommand
 from xml.etree import ElementTree
 import requests
-#import logging
-
-from webapp.models import BeachMatch
-
-# Konfigurieren Sie das Logging-Modul
-#logger = logging.get#logger(__name__)
-#logger.setLevel(logging.DEBUG)
-
-# Handler für die Ausgabe der Log-Nachrichten in eine Datei
-#file_handler = logging.FileHandler('logs/matches_log.log')
-#file_handler.setLevel(logging.DEBUG)
-
-# Format für die Log-Nachrichten
-#formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-#file_handler.setFormatter(formatter)
-
-# Fügen Sie den Handler zum #logger hinzu
-#logger.addHandler(file_handler)
+import pandas as pd
+from webapp.models import BeachMatch, BeachTournament, BeachRound, BeachTeam
 
 class Command(BaseCommand):
     help = "Import BeachMatches from XML API response"
@@ -26,46 +10,66 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         url = "https://www.fivb.org/vis2009/XmlRequest.asmx"
         payload = {
-            "Request": "<Request Type='GetBeachMatchList' Fields='NoInTournament LocalDate LocalTime NoTeamA NoTeamB Court MatchPointsA MatchPointsB PointsTeamASet1 PointsTeamBSet1 PointsTeamASet2 PointsTeamBSet2 PointsTeamASet3 PointsTeamBSet3 DurationSet1 DurationSet2 DurationSet3 NoRound NoTournament NoPlayerA1 NoPlayerA2 NoPlayerB1 NoPlayerB2'> </Request>"
+            "Request": "<Request Type='GetBeachMatchList' Fields='NoInTournament LocalDate LocalTime NoTeamA NoTeamB Court MatchPointsA MatchPointsB NoRound NoTournament No'></Request>"
         }
 
         response = requests.get(url, params=payload)
         if response.status_code != 200:
-            #logger.error(f"Failed to retrieve data with status code: {response.status_code}")
+            self.stdout.write(self.style.ERROR(f'Failed to retrieve data with status code: {response.status_code}'))
             return
 
         xml_response = ElementTree.fromstring(response.content)
+        data = []
 
         for match in xml_response.findall('BeachMatch'):
-            try:
-                BeachMatch.objects.create(
-                    no_in_tournament=match.attrib.get('NoInTournament'),
-                    local_date=match.attrib.get('LocalDate'),
-                    local_time=match.attrib.get('LocalTime'),
-                    team_a=match.attrib.get('NoTeamA'),
-                    team_b=match.attrib.get('NoTeamB'),
-                    court=match.attrib.get('Court'),
-                    match_points_a=match.attrib.get('MatchPointsA'),
-                    match_points_b=match.attrib.get('MatchPointsB'),
-                    points_team_a_set1=match.attrib.get('PointsTeamASet1'),
-                    points_team_b_set1=match.attrib.get('PointsTeamBSet1'),
-                    points_team_a_set2=match.attrib.get('PointsTeamASet2'),
-                    points_team_b_set2=match.attrib.get('PointsTeamBSet2'),
-                    points_team_a_set3=match.attrib.get('PointsTeamASet3'),
-                    points_team_b_set3=match.attrib.get('PointsTeamBSet3'),
-                    duration_set1=match.attrib.get('DurationSet1'),
-                    duration_set2=match.attrib.get('DurationSet2'),
-                    duration_set3=match.attrib.get('DurationSet3'),
-                    no_round=match.attrib.get('NoRound'),
-                    no_tournament=match.attrib.get('NoTournament'),
-                    no_player_a1=match.attrib.get('NoPlayerA1'),
-                    no_player_a2=match.attrib.get('NoPlayerA2'),
-                    no_player_b1=match.attrib.get('NoPlayerB1'),
-                    no_player_b2=match.attrib.get('NoPlayerB2')
-                )
-                #logger.info(f"Successfully imported match with ID {match.attrib.get('NoInTournament')}")
-            except Exception as e:
-                pass
-                #logger.error(f"Failed to import match with ID {match.attrib.get('NoInTournament')}: {str(e)}")
-                #logger.error(f"Match details: {match.attrib}")
+            match_data = {
+                'No': match.attrib.get('No'),
+                'NoInTournament': match.attrib.get('NoInTournament'),
+                'LocalDate': match.attrib.get('LocalDate'),
+                'LocalTime': match.attrib.get('LocalTime'),
+                'NoTeamA': match.attrib.get('NoTeamA'),
+                'NoTeamB': match.attrib.get('NoTeamB'),
+                'Court': match.attrib.get('Court'),
+                'MatchPointsA': match.attrib.get('MatchPointsA'),
+                'MatchPointsB': match.attrib.get('MatchPointsB'),
+                'NoRound': match.attrib.get('NoRound'),
+                'NoTournament': match.attrib.get('NoTournament'),
+            }
 
+            if not any(value is None for value in match_data.values()):
+                data.append(match_data)
+
+        df = pd.DataFrame(data)
+        df = df.dropna()
+        df = df.drop_duplicates(subset=['No'])
+
+        if not (BeachRound.objects.exists() and BeachTournament.objects.exists()):
+            self.stdout.write(self.style.WARNING('Bitte importieren Sie zuerst die BeachRound und BeachTournament Daten'))
+            return
+
+        for index, row in df.iterrows():
+            try:
+                TeamA = BeachTeam.objects.get(no=row['NoTeamA'])
+                TeamB = BeachTeam.objects.get(no=row['NoTeamB'])
+                Round = BeachRound.objects.get(no=row['NoRound'])
+                Tournament = BeachTournament.objects.get(no=row['NoTournament'])
+
+                BeachMatch.objects.update_or_create(
+                    No=row['No'],
+                    defaults={
+                        'NoInTournament': row['NoInTournament'],
+                        'LocalDate': pd.to_datetime(row['LocalDate']).date() if pd.notnull(row['LocalDate']) else None,
+                        'LocalTime': pd.to_datetime(row['LocalTime']).time() if pd.notnull(row['LocalTime']) else None,
+                        'NoTeamA': TeamA,
+                        'NoTeamB': TeamB,
+                        'Court': row['Court'],
+                        'MatchPointsA': row['MatchPointsA'],
+                        'MatchPointsB': row['MatchPointsB'],
+                        'NoRound': Round,
+                        'NoTournament': Tournament,
+                    }
+                )
+            except (BeachTeam.DoesNotExist, BeachRound.DoesNotExist, BeachTournament.DoesNotExist) as e:
+                self.stdout.write(self.style.WARNING(f'Fehler beim Importieren eines Matches: {e}'))
+
+        self.stdout.write(self.style.SUCCESS('BeachMatch Daten erfolgreich importiert.'))

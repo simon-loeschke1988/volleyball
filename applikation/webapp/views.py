@@ -1,7 +1,7 @@
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render, get_object_or_404
 from django.template import loader
-from .models import Player, BeachTeam, BeachMatch, BeachTournament, Event
+from .models import  BeachTeam, BeachTournament, Event, Player, BeachRound, BeachMatch
 from django.db.models import Q
 from django.http import HttpResponse
 from django.utils.timezone import make_aware
@@ -12,30 +12,39 @@ from datetime import datetime, timedelta
 # Create your views here.
 
 def index(request):
+    '''Diese Funktion gibt die Startseite zurück: Hier werden die Events angezeigt, die in den nächsten 5 Jahren stattfinden'''
     # Aktuelles Datum und Datum für 5 Jahre zurück und 7 Monate voraus berechnen
     today = make_aware(datetime.today())
     one_year_ago = today - timedelta(days=1 * 365)
     seven_months_later = today + timedelta(days=7 * 30)  # Ca. 7 Monate
 
     # Turniere filtern, die zwischen 5 Jahren zurück und 7 Monaten voraus starten
-    events = Event.objects.filter(start_date__range=(one_year_ago, seven_months_later)).order_by('-start_date')
+    events = Event.objects.filter(start_date__range=(one_year_ago, seven_months_later)).order_by('-start_date').distinct()
 
     context = {
         'events': events,
     }
     return render(request, 'index.html', context)
 
-def tournament_matches(request, tournament_id):
-    tournament = get_object_or_404(BeachTournament, id=tournament_id)
-    matches = BeachMatch.objects.filter(no_tournament=tournament.no)  # Annahme: `no_tournament` korrespondiert mit `BeachTournament.no`
+def tournament(request):
+    '''Diese Funktion gibt die Turnierseite zurück: Hier werden alle Turniere angezeigt'''
+    event_id = request.GET.get('event_id')
+    selected_gender = request.GET.get('gender')
+    
+    tournaments = BeachTournament.objects.all()
 
-    context = {
-        'tournament': tournament,
-        'matches': matches,
-    }
-    return render(request, 'tournament_matches.html', context)
+    if event_id:
+        tournaments = tournaments.filter(event__id=event_id)
+    if selected_gender:
+        tournaments = tournaments.filter(gender=selected_gender)
+
+    events = Event.objects.all()
+    genders = BeachTournament.objects.values_list('gender', flat=True).distinct()
+
+    return render(request, 'tournament.html', {'tournaments': tournaments, 'events': events, 'genders': genders})
 
 def player(request):
+    '''Diese Funktion gibt die Spielerseite zurück: Hier werden alle Spieler angezeigt'''
     query_name = request.GET.get('name','')
     query_fedcode = request.GET.get('fedcode','')
     
@@ -64,7 +73,9 @@ def player(request):
     return render(request, 'player.html', context)
 
 
+
 def teams(request):
+    '''Diese Funktion gibt die Teamseite zurück: Hier werden alle Teams angezeigt'''
     teams = BeachTeam.objects.all()
 
     # Suche implementieren
@@ -87,5 +98,40 @@ def teams(request):
 
     return render(request, 'teams.html', {'teams': teams, 'query': query})
 
+
+def beach_matches(request):
+    federation_code = request.GET.get('federation_code')
+    country = request.GET.get('country')
+    event_id = request.GET.get('event_id')
+    tournament_id = request.GET.get('tournament_id')
+    team_id = request.GET.get('team_id')
+
+    matches = BeachMatch.objects.all()
+
+    if federation_code:
+        matches = matches.filter(Q(team_a__federation_code=federation_code) | Q(team_b__federation_code=federation_code))
+    if country:
+        matches = matches.filter(Q(team_a__players__country=country) | Q(team_b__players__country=country))
+    if event_id:
+        matches = matches.filter(event__id=event_id)
+    if tournament_id:
+        matches = matches.filter(tournament__id=tournament_id)
+    if team_id:
+        matches = matches.filter(Q(team_a__id=team_id) | Q(team_b__id=team_id))
+
+    federations = BeachTeam.values_list('federation_code', flat=True).distinct()
+    countries = Player.objects.values_list('country', flat=True).distinct()
+    events = Event.objects.all()
+    tournaments = BeachTournament.objects.all()
+    teams = BeachTeam.objects.all()
+
+    return render(request, 'matches.html', {
+        'matches': matches,
+        'federations': federations,
+        'countries': countries,
+        'events': events,
+        'tournaments': tournaments,
+        'teams': teams
+    })
 
 

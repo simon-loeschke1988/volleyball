@@ -1,23 +1,9 @@
-from django.core.management.base import BaseCommand
-from xml.etree import ElementTree
 import requests
-#import logging
-
-from webapp.models import Player, BeachTeam
-
-#logger = logging.get#logger(__name__)
-#logger.setLevel(logging.DEBUG)  # Setzen Sie das gewünschte Log-Level
-
-# Handler für die Ausgabe der Log-Nachrichten in eine Datei
-#file_handler = logging.FileHandler('logs/team_import.log')
-#file_handler.setLevel(logging.DEBUG)  # Setzen Sie das gewünschte Log-Level für den Handler
-
-# Format für die Log-Nachrichten
-#formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-#file_handler.setFormatter(formatter)
-
-# Fügen Sie den Handler zum #logger hinzu
-#logger.addHandler(file_handler)
+from xml.etree import ElementTree
+import pandas as pd
+import hashlib
+from django.core.management.base import BaseCommand
+from webapp.models import BeachTeam, Player
 
 class Command(BaseCommand):
     help = "Import BeachTeams from XML API response"
@@ -25,69 +11,79 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         url = "https://www.fivb.org/vis2009/XmlRequest.asmx"
         payload = {
-            "Request": "<Request Type='GetBeachTeamList' Fields='NoPlayer1 NoPlayer2 Name Rank EarnedPointsTeam EarningsTeam'> </Request>"
+            "Request": "<Request Type='GetBeachTeamList' Fields='Name No NoPlayer1 NoPlayer2'></Request>"
         }
 
         response = requests.get(url, params=payload)
         if response.status_code != 200:
-            #logger.error(f"Failed to retrieve data with status code: {response.status_code}")
+            self.stdout.write(self.style.ERROR(f'Failed to retrieve data: {response.status_code}'))
             return
 
         xml_response = ElementTree.fromstring(response.content)
+        data = []
 
         for team in xml_response.findall('BeachTeam'):
             no_value = team.attrib.get('No')
-            no_player1 = team.attrib.get('NoPlayer1')
-            no_player2 = team.attrib.get('NoPlayer2')
-            
-            if not no_player1 or not no_player1.isdigit() or not no_player2 or not no_player2.isdigit():
-                #logger.warning(f"Invalid player numbers for team: {team.attrib.get('Name')}")
-                continue
+            name = team.attrib.get('Name')
+            NoPlayer1 = team.attrib.get('NoPlayer1')
+            NoPlayer2 = team.attrib.get('NoPlayer2')
 
-            if not no_value or not no_value.isdigit():
-                #logger.error(f"Missing or empty 'No' value for team {team.attrib.get('Name')}. Skipping this team.")
-                continue
+            if name and '?' not in name and no_value:
+                data.append({
+                    'name': name,
+                    'no': no_value,
+                    'NoPlayer1': NoPlayer1,
+                    'NoPlayer2': NoPlayer2,
+                })
 
-            try:
-                no_as_number = int(no_value)
-            except ValueError:
-                #logger.error(f"Invalid 'No' value '{no_value}' for team {team.attrib.get('Name')}. Skipping this team.")
-                continue
+        df = pd.DataFrame(data)
+        df = df.drop_duplicates(subset=['no'])
 
-            # Überprüfen, ob beide Spieler existieren
-            player1_instance = Player.objects.filter(no=no_player1).first()
-            player2_instance = Player.objects.filter(no=no_player2).first()
+        # csv_file = 'beach_teams_data.csv'
+        # df.to_csv(csv_file, index=False)
 
-            if not player1_instance:
-                #logger.warning(f"Player with number {no_player1} not found. Skipping team {team.attrib.get('Name')}.")
-                continue
+        # with open(csv_file, 'rb') as f:
+        #     file_hash = hashlib.sha256(f.read()).hexdigest()
 
-            if not player2_instance:
-                #logger.warning(f"Player with number {no_player2} not found. Skipping team {team.attrib.get('Name')}.")
-                continue
+        # hash_file = 'beach_teams_data_hash.txt'
+        # try:
+        #     with open(hash_file, 'r') as f:
+        #         existing_hash = f.read()
+        # except FileNotFoundError:
+        #     existing_hash = ''
 
-            # Wenn beide Spieler existieren, dann erstellen oder aktualisieren Sie das BeachTeam
-            rank = team.attrib.get('Rank') or None
-            if rank and rank.strip() != '':
-                try:
-                    rank = int(rank)
-                except ValueError:
-                    #logger.error(f"Invalid rank value '{rank}' for team {team.attrib.get('Name')}. Skipping this team.")
-                    continue
+        # if file_hash != existing_hash or not BeachTeam.objects.exists():
+        #     with open(hash_file, 'w') as f:
+        #         f.write(file_hash)
 
-            earned_points_team = int(team.attrib.get('EarnedPointsTeam') or 0)
-            earnings_team = int(team.attrib.get('EarningsTeam') or 0)
+        while not Player.objects.exists():
+            self.stdout.write(self.style.ERROR('Player Tabelle ist leer. Bitte zuerst Player importieren.'))
+            return
+        else:
 
-            BeachTeam.objects.update_or_create(
-                player1=player1_instance,
-                player2=player2_instance,
-                name=team.attrib.get('Name'),
-                defaults={
-                    'no': no_as_number,
-                    'rank': rank,
-                    'earned_points_team': earned_points_team,
-                    'earnings_team': earnings_team
-                }
-            )
+            for index, row in df.iterrows():
+                # Sicherstellen, dass die Spieler-IDs korrekt als Integer behandelt werden
+                player_1_id = pd.to_numeric(row['NoPlayer1'], errors='coerce', downcast='integer')
+                player_2_id = pd.to_numeric(row['NoPlayer2'], errors='coerce', downcast='integer')
 
-            #logger.info(f"Successfully imported/updated team {team.attrib.get('Name')}")
+                # Suchen der Player-Objekte
+                player_1 = Player.objects.filter(no=player_1_id).first() if not pd.isna(player_1_id) else None
+                #self.stdout.write(f'player_1: {player_1} found')
+                player_2 = Player.objects.filter(no=player_2_id).first() if not pd.isna(player_2_id) else None
+                #self.stdout.write(f'player_2: {player_2} found')
+
+                if player_1 and player_2:
+                    #self.stdout.write(f'Creating BeachTeam instance for {row["name"]}')
+                    BeachTeam.objects.update_or_create(
+                        no=row['no'],
+                        defaults={
+                            'name': row['name'],
+                            'NoPlayer1': player_1,
+                            'NoPlayer2': player_2,
+                        }
+                    )
+                else:
+                    self.stdout.write('Es konnte keine Instanz des Teams angelegt werden. Player nicht gefunden')
+            else:
+                self.stdout.write(self.style.SUCCESS('Successfully imported BeachTeams'))
+
