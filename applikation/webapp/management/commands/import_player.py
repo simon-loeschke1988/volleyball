@@ -3,12 +3,15 @@ import xml.etree.ElementTree as ET
 import pandas as pd
 import hashlib
 from django.core.management.base import BaseCommand
-from webapp.models import Player 
+from webapp.models import Player, BeachTeam
 
 class Command(BaseCommand):
     help = 'Import players from the specified XML request'
 
     def handle(self, *args, **kwargs):
+        
+        # Löschen der Teams in der Datenbank, da Fremdschlüsselbeziehung zu Spielern besteht
+        BeachTeam.objects.all().delete()
         # URL und Payload für den Request
         url = "https://www.fivb.org/vis2009/XmlRequest.asmx"
         payload = {

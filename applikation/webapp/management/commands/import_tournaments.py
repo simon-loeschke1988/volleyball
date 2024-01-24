@@ -1,21 +1,11 @@
 from django.core.management.base import BaseCommand
 from xml.etree import ElementTree
 import requests
-#import logging
+
 from datetime import datetime
 
 from webapp.models import BeachTournament
 
-#logger = logging.get#logger(__name__)
-#logger.setLevel(logging.DEBUG)
-
-#file_handler = logging.FileHandler('logs/tournament_import.log')
-#file_handler.setLevel(logging.DEBUG)
-
-#formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-#file_handler.setFormatter(formatter)
-
-#logger.addHandler(file_handler)
 
 class Command(BaseCommand):
     help = "Import BeachTournaments from XML API response"
@@ -32,7 +22,7 @@ class Command(BaseCommand):
         # HTTP-Anfrage senden
         response = requests.get(url, params=payload_gettournamentlist)
         if response.status_code != 200:
-            #logger.error(f"Failed to retrieve data with status code: {response.status_code}")
+            
             return
 
         xml_response = ElementTree.fromstring(response.content)
@@ -67,4 +57,3 @@ class Command(BaseCommand):
                 }
             )
 
-            #logger.info(f"Successfully imported/updated tournament {name}")

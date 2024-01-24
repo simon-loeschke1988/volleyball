@@ -12,7 +12,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         url = "https://www.fivb.org/vis2009/XmlRequest.asmx"
         payload = {
-            "Request": "<Request Type='GetBeachTeamList' Fields='Name No'></Request>"
+            "Request": "<Request Type='GetBeachTeamList' Fields='Name No NoPlayer1 NoPlayer2'></Request>"
         }
 
         response = requests.get(url, params=payload)
@@ -26,11 +26,15 @@ class Command(BaseCommand):
         for team in xml_response.findall('BeachTeam'):
             no_value = team.attrib.get('No')
             name = team.attrib.get('Name')
+            NoPlayer1 = team.attrib.get('NoPlayer1')
+            NoPlayer2 = team.attrib.get('NoPlayer2')
   
             if name and '?' not in name and no_value:
                 data.append({
                     'name': name,
                     'no': no_value,
+                    'NoPlayer1': NoPlayer1,
+                    'NoPlayer2': NoPlayer2,
                 })
 
         # Erstellen eines DataFrame aus den gesammelten Daten
@@ -64,6 +68,8 @@ class Command(BaseCommand):
                 BeachTeam.objects.update_or_create(
                     name=row['name'],
                     no=row['no'],
+                    NoPlayer1=row['NoPlayer1'],
+                    NoPlayer2=row['NoPlayer2'],
                 )
             self.stdout.write(self.style.SUCCESS('BeachTeams erfolgreich importiert.'))
         else:

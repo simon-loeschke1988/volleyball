@@ -1,21 +1,11 @@
 from django.core.management.base import BaseCommand
 from xml.etree import ElementTree
 import requests
-#import logging
+
 from datetime import datetime
 
 from webapp.models import Event
 
-##logger = logging.get#logger(__name__)
-#logger.setLevel(logging.DEBUG)
-
-#file_handler = logging.FileHandler('logs/event_import.log')
-#file_handler.setLevel(logging.DEBUG)
-
-#formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-#file_handler.setFormatter(formatter)
-
-#logger.addHandler(file_handler)
 
 class Command(BaseCommand):
     help = "Import Events from XML API response"
@@ -50,9 +40,9 @@ class Command(BaseCommand):
                     defaults=event_data,
                 )
 
-                #logger.info(f"Successfully imported/updated event {event_data['name']}")
+              
         except requests.RequestException as e:
-            #logger.error(f"Request failed: {e}")
+       
 
             def parse_date(self, date_string):
                 if not date_string:

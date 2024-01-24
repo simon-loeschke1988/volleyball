@@ -1,24 +1,11 @@
 from django.core.management.base import BaseCommand
 from xml.etree import ElementTree
 import requests
-#import logging
+
 
 from webapp.models import BeachMatch
 
-# Konfigurieren Sie das Logging-Modul
-#logger = logging.get#logger(__name__)
-#logger.setLevel(logging.DEBUG)
 
-# Handler für die Ausgabe der Log-Nachrichten in eine Datei
-#file_handler = logging.FileHandler('logs/matches_log.log')
-#file_handler.setLevel(logging.DEBUG)
-
-# Format für die Log-Nachrichten
-#formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-#file_handler.setFormatter(formatter)
-
-# Fügen Sie den Handler zum #logger hinzu
-#logger.addHandler(file_handler)
 
 class Command(BaseCommand):
     help = "Import BeachMatches from XML API response"
@@ -63,9 +50,8 @@ class Command(BaseCommand):
                     no_player_b1=match.attrib.get('NoPlayerB1'),
                     no_player_b2=match.attrib.get('NoPlayerB2')
                 )
-                #logger.info(f"Successfully imported match with ID {match.attrib.get('NoInTournament')}")
+            
             except Exception as e:
                 pass
-                #logger.error(f"Failed to import match with ID {match.attrib.get('NoInTournament')}: {str(e)}")
-                #logger.error(f"Match details: {match.attrib}")
+              
 

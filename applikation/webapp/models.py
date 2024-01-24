@@ -3,10 +3,13 @@ from django.db import models
 class BeachTeam(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
     no = models.PositiveIntegerField(primary_key=True)
+    NoPlayer1 = models.ForeignKey('Player', on_delete=models.CASCADE, related_name='NoPlayer1', null=True, blank=True)
+    NoPlayer2 = models.ForeignKey('Player', on_delete=models.CASCADE, related_name='NoPlayer2', null=True, blank=True)
     
     
+class BeachMatch(models.Model):
+    pass
     
-# Player Model definieren
 
 class Player (models.Model):
     federation_code= models.CharField(max_length=100, null=True, blank=True)
