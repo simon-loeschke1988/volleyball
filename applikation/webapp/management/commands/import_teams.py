@@ -4,12 +4,16 @@ import requests
 import pandas as pd
 import hashlib
 
-from webapp.models import BeachTeam
+from webapp.models import BeachTeam, BeachMatch
 
 class Command(BaseCommand):
     help = "Import BeachTeams from XML API response"
 
     def handle(self, *args, **kwargs):
+        
+        # löschen der Tabelle BeachMatch da Fremdschlüssel
+        BeachMatch.objects.all().delete()
+        
         url = "https://www.fivb.org/vis2009/XmlRequest.asmx"
         payload = {
             "Request": "<Request Type='GetBeachTeamList' Fields='Name No NoPlayer1 NoPlayer2'></Request>"

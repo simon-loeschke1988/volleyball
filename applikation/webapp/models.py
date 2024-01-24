@@ -8,7 +8,23 @@ class BeachTeam(models.Model):
     
     
 class BeachMatch(models.Model):
-    pass
+    NoInTournament = models.IntegerField(primary_key=True)
+    LocalDate = models.DateField(null=True, blank=True)
+    LocalTime = models.TimeField(null=True, blank=True)
+    NoTeamA = models.ForeignKey('BeachTeam', on_delete=models.CASCADE, related_name='NoTeamA', null=True, blank=True)
+    NoTeamB = models.ForeignKey('BeachTeam', on_delete=models.CASCADE, related_name='NoTeamB', null=True, blank=True)
+    Court = models.CharField(max_length=100, null=True, blank=True)
+    MatchPointsA = models.IntegerField(null=True, blank=True)
+    MatchPointsB = models.IntegerField(null=True, blank=True)
+    NoRound = models.ForeignKey('BeachRound', on_delete=models.CASCADE, related_name='NoRound', null=True, blank=True)
+    NoTournament = models.ForeignKey('BeachTournament', on_delete=models.CASCADE, related_name='NoTournament', null=True, blank=True)
+    
+class BeachRound(models.Model):
+    code = models.CharField(max_length=100, null=True, blank=True)
+    name = models.CharField(max_length=255, null=True, blank=True)
+    bracket = models.CharField(max_length=100, null=True, blank=True)
+    no = models.IntegerField(primary_key=True)
+    NoTournament = models.ForeignKey('BeachTournament', on_delete=models.CASCADE, related_name='NoTournamentRound', null=True, blank=True)
     
 
 class Player (models.Model):
@@ -19,6 +35,7 @@ class Player (models.Model):
     plays_beach= models.BooleanField(null=True, blank=True)
     no= models.IntegerField(primary_key=True)
     gender= models.CharField(max_length=100, null=True, blank=True)
+    eventnummer = models.ForeignKey('Event', on_delete=models.CASCADE, related_name='noevent', null=True, blank=True)
 
 
 class BeachTournament(models.Model):
@@ -29,6 +46,7 @@ class BeachTournament(models.Model):
     number = models.IntegerField(null=True, blank=True)
     version = models.IntegerField(null=True, blank=True)
     no = models.IntegerField(null=True, blank=True)
+    gender = models.CharField(max_length=10, null=True, blank=True)
 
     # Hier können Sie weitere Felder hinzufügen, die in Ihren XML-Daten vorhanden sind
     # Zum Beispiel:
