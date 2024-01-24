@@ -1,0 +1,71 @@
+{% load static %}
+{% extends 'base.html'%}
+
+{% block title %}Beach Matches{% endblock %}
+{% block content %}
+
+        <!-- Filter Formular -->
+        <form method="get" action="{% url 'beach_matches' %}" class="mb-6 flex flex-wrap">
+            <!-- Dropdown für Federation -->
+            <select name="federation_code" class="p-2 rounded border border-gray-300 mr-2 mb-2">
+                <option value="">Wähle eine Federation</option>
+                {% for federation in federations %}
+                <option value="{{ federation.code }}">{{ federation.name }}</option>
+                {% endfor %}
+            </select>
+
+            <!-- Dropdown für Land -->
+            <select name="country" class="p-2 rounded border border-gray-300 mr-2 mb-2">
+                <option value="">Wähle ein Land</option>
+                {% for country in countries %}
+                <option value="{{ country }}">{{ country }}</option>
+                {% endfor %}
+            </select>
+
+            <!-- Dropdown für Event -->
+            <select name="event_id" class="p-2 rounded border border-gray-300 mr-2 mb-2">
+                <option value="">Wähle ein Event</option>
+                {% for event in events %}
+                <option value="{{ event.id }}">{{ event.name }}</option>
+                {% endfor %}
+            </select>
+
+            <!-- Dropdown für Tournament -->
+            <select name="tournament_id" class="p-2 rounded border border-gray-300 mr-2 mb-2">
+                <option value="">Wähle ein Tournament</option>
+                {% for tournament in tournaments %}
+                <option value="{{ tournament.id }}">{{ tournament.name }}</option>
+                {% endfor %}
+            </select>
+
+            <!-- Dropdown für Team -->
+            <select name="team_id" class="p-2 rounded border border-gray-300 mr-2 mb-2">
+                <option value="">Wähle ein Team</option>
+                {% for team in teams %}
+                <option value="{{ team.id }}">{{ team.name }}</option>
+                {% endfor %}
+            </select>
+
+            <input type="submit" value="Filtern" class="p-2 bg-blue-500 text-white rounded mb-2">
+        </form>
+
+        <!-- Kacheln für Matches -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for match in matches %}
+            <div class="bg-white p-4 rounded shadow">
+                <h2 class="text-lg font-bold">{{ match.team_a.name }} vs {{ match.team_b.name }}</h2>
+                <p><strong>Datum:</strong> {{ match.local_date }}</p>
+                <p><strong>Zeit:</strong> {{ match.local_time }}</p>
+                <p><strong>Event:</strong> {{ match.event.name }}</p>
+                <p><strong>Tournament:</strong> {{ match.tournament.name }}</p>
+                <p><strong>Punkte Team A:</strong> {{ match.match_points_a }}</p>
+                <p><strong>Punkte Team B:</strong> {{ match.match_points_b }}</p>
+                <!-- Weitere Match-Details -->
+            </div>
+            {% empty %}
+            <p>Keine Matches gefunden.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+{% endblock %}

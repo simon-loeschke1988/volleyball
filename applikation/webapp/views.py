@@ -99,4 +99,39 @@ def teams(request):
     return render(request, 'teams.html', {'teams': teams, 'query': query})
 
 
+def beach_matches(request):
+    federation_code = request.GET.get('federation_code')
+    country = request.GET.get('country')
+    event_id = request.GET.get('event_id')
+    tournament_id = request.GET.get('tournament_id')
+    team_id = request.GET.get('team_id')
+
+    matches = BeachMatch.objects.all()
+
+    if federation_code:
+        matches = matches.filter(Q(team_a__federation_code=federation_code) | Q(team_b__federation_code=federation_code))
+    if country:
+        matches = matches.filter(Q(team_a__players__country=country) | Q(team_b__players__country=country))
+    if event_id:
+        matches = matches.filter(event__id=event_id)
+    if tournament_id:
+        matches = matches.filter(tournament__id=tournament_id)
+    if team_id:
+        matches = matches.filter(Q(team_a__id=team_id) | Q(team_b__id=team_id))
+
+    federations = BeachTeam.values_list('federation_code', flat=True).distinct()
+    countries = Player.objects.values_list('country', flat=True).distinct()
+    events = Event.objects.all()
+    tournaments = BeachTournament.objects.all()
+    teams = BeachTeam.objects.all()
+
+    return render(request, 'matches.html', {
+        'matches': matches,
+        'federations': federations,
+        'countries': countries,
+        'events': events,
+        'tournaments': tournaments,
+        'teams': teams
+    })
+
 
