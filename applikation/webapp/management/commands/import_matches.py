@@ -13,7 +13,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         url = "https://www.fivb.org/vis2009/XmlRequest.asmx"
         payload = {
-            "Request": "<Request Type='GetBeachMatchList' Fields='NoInTournament LocalDate LocalTime NoTeamA NoTeamB Court MatchPointsA MatchPointsB PointsTeamASet1 PointsTeamBSet1 PointsTeamASet2 PointsTeamBSet2 PointsTeamASet3 PointsTeamBSet3 DurationSet1 DurationSet2 DurationSet3 NoRound NoTournament NoPlayerA1 NoPlayerA2 NoPlayerB1 NoPlayerB2'> </Request>"
+            "Request": "<Request Type='GetBeachMatchList' Fields='NoInTournament LocalDate LocalTime NoTeamA NoTeamB Court MatchPointsA MatchPointsB NoRound NoTournament > </Request>"
         }
 
         response = requests.get(url, params=payload)
