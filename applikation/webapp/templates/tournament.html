@@ -9,6 +9,21 @@
 
     <h1 class="text-2xl font-bold mb-4">Tournament List</h1>
 
+    <form method="get" action="{% url 'tournament' %}">
+        <select name="event_id" onchange="this.form.submit()">
+            <option value="">Wähle ein Event</option>
+            {% for event in events %}
+            <option value="{{ event.id }}">{{ event.name }}</option>
+            {% endfor %}
+        </select>
+        <select name="gender" onchange="this.form.submit()">
+            <option value="">Wähle ein Geschlecht</option>
+            {% for gender in genders %}
+            <option value="{{ gender }}">{{ gender }}</option>
+            {% endfor %}
+        </select>
+    </form>
+    
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {% for tournament in tournaments %}
             <div class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 ease-in-out">
@@ -16,6 +31,7 @@
                     <h2 class="text-xl font-semibold mb-2">{{ tournament.name }}</h2>
                     <p class="text-gray-600">Start Date: {{ tournament.start_date }}</p>
                     <p class="text-gray-600">End Date: {{ tournament.end_date }}</p>
+                    <p class = "text-gray-600">Gender: {{ tournament.event.gender}}</p>
                 </div>
             </div>
         {% endfor %}

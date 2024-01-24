@@ -1,7 +1,7 @@
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render, get_object_or_404
 from django.template import loader
-from .models import  BeachTeam, BeachTournament, Event, Player
+from .models import  BeachTeam, BeachTournament, Event, Player, BeachRound, BeachMatch
 from django.db.models import Q
 from django.http import HttpResponse
 from django.utils.timezone import make_aware
@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 # Create your views here.
 
 def index(request):
+    '''Diese Funktion gibt die Startseite zurück: Hier werden die Events angezeigt, die in den nächsten 5 Jahren stattfinden'''
     # Aktuelles Datum und Datum für 5 Jahre zurück und 7 Monate voraus berechnen
     today = make_aware(datetime.today())
     one_year_ago = today - timedelta(days=1 * 365)
@@ -26,11 +27,24 @@ def index(request):
     return render(request, 'index.html', context)
 
 def tournament(request):
-    tournaments = BeachTournament.objects.all().distinct()  # Hier holen wir alle Turniere aus der Datenbank
-    return render(request, 'tournament.html', {'tournaments': tournaments})
+    '''Diese Funktion gibt die Turnierseite zurück: Hier werden alle Turniere angezeigt'''
+    event_id = request.GET.get('event_id')
+    selected_gender = request.GET.get('gender')
+    
+    tournaments = BeachTournament.objects.all()
 
+    if event_id:
+        tournaments = tournaments.filter(event__id=event_id)
+    if selected_gender:
+        tournaments = tournaments.filter(gender=selected_gender)
+
+    events = Event.objects.all()
+    genders = BeachTournament.objects.values_list('gender', flat=True).distinct()
+
+    return render(request, 'tournament.html', {'tournaments': tournaments, 'events': events, 'genders': genders})
 
 def player(request):
+    '''Diese Funktion gibt die Spielerseite zurück: Hier werden alle Spieler angezeigt'''
     query_name = request.GET.get('name','')
     query_fedcode = request.GET.get('fedcode','')
     
@@ -61,6 +75,7 @@ def player(request):
 
 
 def teams(request):
+    '''Diese Funktion gibt die Teamseite zurück: Hier werden alle Teams angezeigt'''
     teams = BeachTeam.objects.all()
 
     # Suche implementieren
