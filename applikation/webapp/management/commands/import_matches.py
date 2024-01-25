@@ -73,7 +73,11 @@ class Command(BaseCommand):
                             'NoTournament': Tournament,
                         }
                     )
-                except (BeachTeam.DoesNotExist, BeachRound.DoesNotExist, BeachTournament.DoesNotExist) as e:
+                except BeachTeam.DoesNotExist as e:
                     self.stdout.write(self.style.WARNING(f'Fehler beim Importieren eines Matches: {e}'))
+                    continue
+
+                    
+                
 
         self.stdout.write(self.style.SUCCESS('BeachMatch Daten erfolgreich importiert.'))
