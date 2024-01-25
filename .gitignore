@@ -13,6 +13,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.exe
+*.csv
+*.txt
+
 
 # C extensions
 *.so
