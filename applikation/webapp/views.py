@@ -161,3 +161,26 @@ def beach_matches(request):
         'tournaments': tournaments,
         'teams': teams
     })
+
+def load_matches(request):
+    ''' Diese Funktion ermöglicht das Laden von Matches per AJAX-Request'''
+    page = request.GET.get('page', 1)
+    current_year = datetime.now().year
+    last_year = current_year - 1
+    start_date_last_year = datetime(last_year, 1, 1)
+    end_date_this_year = datetime(current_year, 12, 31)
+
+    matches = BeachMatch.objects.filter(
+        LocalDate__range=(start_date_last_year, end_date_this_year)
+    ).order_by('-LocalDate')
+
+    paginator = Paginator(matches, 20)
+    try:
+        matches_page = paginator.page(page)
+    except PageNotAnInteger:
+        matches_page = paginator.page(1)
+    except EmptyPage:
+        matches_page = paginator.page(paginator.num_pages)
+
+    matches_data = list(matches_page.object_list.values('No', 'LocalDate', 'LocalTime', 'NoTeamA', 'NoTeamB', 'Court', 'MatchPointsA', 'MatchPointsB'))  # Passen Sie diese Zeile an, um die benötigten Felder zu erhalten
+    return JsonResponse({'matches': matches_data})

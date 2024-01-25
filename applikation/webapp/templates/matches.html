@@ -77,7 +77,31 @@
             {% empty %}
             <p>Keine Matches gefunden.</p>
             {% endfor %}
+            <button id="load-more">Mehr Matches laden</button>
+            <div id="matches-container"></div>
         </div>
-    </div>
+    
+
+    <script>
+        let currentPage = 1;
+    
+        document.getElementById('load-more').addEventListener('click', function() {
+            currentPage += 1;
+            fetch(`/load-matches?page=${currentPage}`)  // Stellen Sie sicher, dass diese URL mit Ihrer Django-URL übereinstimmt
+                .then(response => response.json())
+                .then(data => {
+                    // Fügen Sie hier Ihren Code ein, um die Matches im HTML anzuzeigen.
+                    data.matches.forEach(match => {
+                        const matchDiv = document.createElement('div');
+                        matchDiv.innerHTML = `Match am ${match.LocalDate} um ${match.LocalTime} - Team A: ${match.NoTeamA} vs. Team B: ${match.NoTeamB}`;
+                        document.getElementById('matches-container').appendChild(matchDiv);
+                    });
+    
+                    if (data.matches.length === 0) {
+                        document.getElementById('load-more').disabled = true; // Deaktiviert den Button, wenn keine weiteren Daten geladen werden können
+                    }
+                });
+        });
+    </script>
 
 {% endblock %}
