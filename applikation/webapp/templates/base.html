@@ -15,16 +15,38 @@
 </head>
 <body>
     <header>
-        <nav class="text-lg align-middle">
-            <ul class="flex flex-row">
-                <li class="m-auto"><a href="{%url 'webapp:index'%}">Events</a></li>
-                <li class="m-auto"><a href="{%url 'webapp:player' %}">Players</a></li>
-                <li class="m-auto"><a href="{%url 'webapp:teams'%}">Teams</a></li>
-                <li class="m-auto"><a href="{%url 'webapp:tournament' %}">Tournaments</a></li>
-                <li class="m-auto"><a href="{%url 'webapp:beach_matches' %}">Matches</a></li>
-                
+        <nav class="bg-gray-800 p-4">
+            <ul class="flex flex-row justify-center space-x-4">
+                <li>
+                    <a href="{%url 'webapp:index'%}" class="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600 text-white text-lg font-semibold shadow transition duration-300 ease-in-out">
+                        Events
+                    </a>
+                </li>
+                <li>
+                    <a href="{%url 'webapp:player' %}" class="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600 text-white text-lg font-semibold shadow transition duration-300 ease-in-out">
+                        Players
+                    </a>
+                </li>
+                <li>
+                    <a href="{%url 'webapp:teams'%}" class="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600 text-white text-lg font-semibold shadow transition duration-300 ease-in-out">
+                        Teams
+                    </a>
+                </li>
+                <li>
+                    <a href="{%url 'webapp:tournament' %}" class="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600 text-white text-lg font-semibold shadow transition duration-300 ease-in-out">
+                        Tournaments
+                    </a>
+                </li>
+                <li>
+                    <a href="{%url 'webapp:beach_matches' %}" class="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600 text-white text-lg font-semibold shadow transition duration-300 ease-in-out">
+                        Matches
+                    </a>
+                </li>
             </ul>
         </nav>
+        
+        
+        
     </header>
     <main>
         {% block content %}{% endblock %}

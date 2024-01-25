@@ -1,47 +1,51 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h1>Beach Teams</h1>
+  <div class="container mx-auto p-4">
+    <h1 class="text-2xl font-bold mb-4">Beach Teams</h1>
 
-  <form method="GET" action="{% url 'webapp:teams' %}">
-    <input type="text" name="q" value="{{ query }}" placeholder="Suche nach Namen oder Federation Code">
-    <button type="submit">Suchen</button>
-  </form>
+    <form method="GET" action="{% url 'webapp:teams' %}" class="mb-4">
+      <input type="text" name="q" value="{{ query }}" placeholder="Suche nach Namen oder Federation Code" class="border-2 border-gray-300 rounded py-2 px-4 mr-2">
+      <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Suchen</button>
+    </form>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Team Name</th>
-        <th>Rank</th>
-        <th>Earned Points</th>
-        <th>Earnings</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for team in teams %}
-        <tr>
-          <td>{{ team.name }}</td>
-          <td>{{ team.rank }}</td>
-          <td>{{ team.earned_points_team }}</td>
-          <td>{{ team.earnings_team }}</td>
+    <table class="table-auto w-full mb-4">
+      <thead>
+        <tr class="bg-gray-100">
+          <th class="px-4 py-2">Team Name</th>
+          <th class="px-4 py-2">Rank</th>
+          <th class="px-4 py-2">Earned Points</th>
+          <th class="px-4 py-2">Earnings</th>
         </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        {% for team in teams %}
+          <tr>
+            <td class="border px-4 py-2">{{ team.name }}</td>
+            <td class="border px-4 py-2">{{ team.rank }}</td>
+            <td class="border px-4 py-2">{{ team.earned_points_team }}</td>
+            <td class="border px-4 py-2">{{ team.earnings_team }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
 
-  <div class="pagination">
-    <span class="step-links">
-      {% if teams.has_previous %}
-        <a href="?page=1">&laquo; erste</a>
-        <a href="?page={{ teams.previous_page_number }}">vorherige</a>
-      {% endif %}
+    <div class="pagination flex justify-between items-center">
+      <span class="step-links">
+        {% if teams.has_previous %}
+          <a href="?page=1" class="bg-gray-200 hover:bg-gray-300 rounded py-2 px-4">&laquo; erste</a>
+          <a href="?page={{ teams.previous_page_number }}" class="bg-gray-200 hover:bg-gray-300 rounded py-2 px-4">vorherige</a>
+        {% endif %}
+      </span>
 
       <span class="current-page">{{ teams.number }}</span>
 
-      {% if teams.has_next %}
-        <a href="?page={{ teams.next_page_number }}">nächste</a>
-        <a href="?page={{ teams.paginator.num_pages }}">letzte &raquo;</a>
-      {% endif %}
-    </span>
+      <span class="step-links">
+        {% if teams.has_next %}
+          <a href="?page={{ teams.next_page_number }}" class="bg-gray-200 hover:bg-gray-300 rounded py-2 px-4">nächste</a>
+          <a href="?page={{ teams.paginator.num_pages }}" class="bg-gray-200 hover:bg-gray-300 rounded py-2 px-4">letzte &raquo;</a>
+        {% endif %}
+      </span>
+    </div>
   </div>
 {% endblock %}
