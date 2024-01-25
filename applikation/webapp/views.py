@@ -3,7 +3,7 @@ from django.shortcuts import render, get_object_or_404
 from django.template import loader
 from .models import  BeachTeam, BeachTournament, Event, Player, BeachRound, BeachMatch
 from django.db.models import Q
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.utils.timezone import make_aware
 from datetime import datetime, timedelta
 # Author: Simon Löschke
