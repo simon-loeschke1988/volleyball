@@ -137,11 +137,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CELERY_BEAT_SCHEDULE = {
     'import-tournaments-every-hour': {
         'task': 'webapp.tasks.import_tournaments_task',
-        'schedule': crontab(minute=5),
+        'schedule': crontab(minute=55),
     },
     'import-player-every-hour': {
         'task': 'webapp.tasks.import_player_task',
-        'schedule': crontab(minute=15),
+        'schedule': crontab(minute=11),
     },
     'import-teams-every-hour': {
         'task': 'webapp.tasks.import_teams_task',
@@ -154,7 +154,7 @@ CELERY_BEAT_SCHEDULE = {
     },
     'import-matches-every-hour': {
        'task': 'webapp.tasks.import_matches_task',
-       'schedule': crontab(minute=50),
+       'schedule': crontab(minute=59),
     },
    
     
