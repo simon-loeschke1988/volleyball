@@ -3,6 +3,19 @@
 {% block title %}Beach Matches{% endblock %}
 {% block content %}
 
+        <!-- Model für Matches
+        No = models.IntegerField(primary_key=True)
+        NoInTournament = models.IntegerField(null=True, blank=True)
+        LocalDate = models.DateField(null=True, blank=True)
+        LocalTime = models.TimeField(null=True, blank=True)
+        NoTeamA = models.ForeignKey('BeachTeam', on_delete=models.CASCADE, related_name='NoTeamA', null=True, blank=True)
+        NoTeamB = models.ForeignKey('BeachTeam', on_delete=models.CASCADE, related_name='NoTeamB', null=True, blank=True)
+        Court = models.CharField(max_length=100, null=True, blank=True)
+        MatchPointsA = models.IntegerField(null=True, blank=True)
+        MatchPointsB = models.IntegerField(null=True, blank=True)
+        NoRound = models.ForeignKey('BeachRound', on_delete=models.CASCADE, related_name='NoRound', null=True, blank=True)
+        NoTournament = models.ForeignKey('BeachTournament', on_delete=models.CASCADE, related_name='NoTournament', null=True, blank=True)-->
+
         <!-- Filter Formular -->
         <form method="get" action="{% url 'webapp:beach_matches' %}" class="mb-6 flex flex-wrap">
             <!-- Dropdown für Federation -->
@@ -52,13 +65,13 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {% for match in matches %}
             <div class="bg-white p-4 rounded shadow">
-                <h2 class="text-lg font-bold">{{ match.team_a.name }} vs {{ match.team_b.name }}</h2>
-                <p><strong>Datum:</strong> {{ match.local_date }}</p>
-                <p><strong>Zeit:</strong> {{ match.local_time }}</p>
-                <p><strong>Event:</strong> {{ match.event.name }}</p>
-                <p><strong>Tournament:</strong> {{ match.tournament.name }}</p>
-                <p><strong>Punkte Team A:</strong> {{ match.match_points_a }}</p>
-                <p><strong>Punkte Team B:</strong> {{ match.match_points_b }}</p>
+                <h2 class="text-lg font-bold">{{ match.NoTeamA.name }} vs {{ match.NoTeamB.name }}</h2>
+                <p><strong>Datum:</strong> {{ match.LocalDate }}</p>
+                <p><strong>Zeit:</strong> {{ match.LocalTime }}</p>
+                <p><strong>Platz:</strong> {{ match.Court }}</p>
+                <p><strong>Tournament:</strong> {{ match.NoTournament.name }}</p>
+                <p><strong>Punkte {{ match.NoTeamA.name }}:</strong> {{ match.MatchPointsA }}</p>
+                <p><strong>Punkte {{ match.NoTeamB.name }}:</strong> {{ match.MatchPointsB }}</p>
                 <!-- Weitere Match-Details -->
             </div>
             {% empty %}
